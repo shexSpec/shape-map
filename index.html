@@ -9,8 +9,6 @@
 
     <script src='https://www.w3.org/Tools/respec/respec-w3c-common'
             async="async" class='remove'></script>
-    <!-- script src='../primer/respec-w3c-common.js' async class='remove'></script -->
-    <script src="jquery-2.1.4.min.js" type="text/javascript"></script>
 
     <script class='remove'>
       var respecConfig = {
@@ -141,11 +139,13 @@
         ShapeMaps can be easily transmitted an understood with a specialized syntax.
       </p>
       <div class="example">
-        <pre>d:n1 @ s:S1, <span class="comment" style="color: #e20; font-style: italic;"># d: prefix from data, s: from schema</span>
-"foo"^^xsd:string@START!/"missing :p1"$"appinfo":{"myextra1":"..."},
-"chat"@en-fr@&lt;http://...S3&gt;?, # validate a literal
-{FOCUS :p2 "abcd"@en-us}@start:, # validate (one) subject
-{_ :p3 FOCUS}@:start # valide all objects of :p3</pre>
+        <pre class="nohighlight">d:n1 @ s:S1, <span class="comment"># d: prefix from data, s: from schema</span>
+"foo"^^xsd:string@START!           <span class="comment"># "foo" did not match the start shape.</span>
+  /"missing :p1"                   <span class="comment"># The reason given is "missing :p1".</span>
+  $"appinfo":{"myextra1":["..."]} ,<span class="comment"># The application provide structural data.</span>
+"chat"@en-fr@&lt;http://...S3&gt;?, <span class="comment"># validate a literal</span>
+{<span class="keyword">FOCUS</span> :p2 "abcd"@en-us}@start:, <span class="comment"># validate (one) subject</span>
+{_ :p3 <span class="keyword">FOCUS</span>}@:start <span class="comment"># valide all objects of :p3</span></pre>
       </div>
       <ul>
         <li>The <a>node</a> or <a>node selector</a> is before the '@'.</li>
@@ -154,7 +154,7 @@
         <li>For systems that peform validation asynchronously, '<code>?</code>' means that conformance has not been tested.</li>
         <li>The absense of '<code>!</code>' or '<code>?</code>' means that <a>node</a> conforms to the <a>shape expression</a>.</li>
         <li>The '<code>/</code>' character introduces a url-encoded reason string.</li>
-        <li>The '<code>$</code>' character precedes a JSON string which precedes the '<code>:</code>' character and a JSON value.</li>
+        <li>The '<code>$</code>' character precedes a JSON string which precedes the '<code>:</code>' character and a JSON value. At present, the only string permitted here is <code>"appinfo"</code>.</li>
       </ul>
     </section>
 
@@ -186,8 +186,8 @@
         <li> ShapeMap as premise<br/>
         <code>validate(schema, data, premise, question) => results</code><br/>
         where premise, coverage and results are all subsets of the full structure.</li>
-    </ul>
-  </section>
+      </ul>
+    </section>
 
     <section id="grammar">
       <h2>ShapeMap grammar</h2>
