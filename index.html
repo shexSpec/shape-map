@@ -277,6 +277,7 @@ interface <span class="idlInterfaceID">ShExProcessor</span> {
               <li><code>URI/RDF/JSON</code>: Resolve <a data-lt="ShExProcessor.validate.graph">validate.graph</a> and then parse result as RDF/JSON.</li>
               <li><code>URI/JSON-LD</code>: Resolve <a data-lt="ShExProcessor.validate.graph">validate.graph</a> and then parse result as JSON-LD.</li>
               <li><code>URI/RDF-THRIFT</code>: Resolve <a data-lt="ShExProcessor.validate.graph">validate.graph</a> and then parse result as RDF-THRIFT.</li>
+              <li><code>SPARQL</code>: <a data-lt="ShExProcessor.validate.graph">validate.graph</a> is the URI of a sparql endpoint. Validator will fire SPARQL queries to validate. (option for 2.1?)</li>
             </ul>
             <span class="ednote">NOTE: left out option 'AUTOMATIC', because of potential security issues.</span><br>   
             <span class="ednote">TODO: turn into enumeration</span>                
