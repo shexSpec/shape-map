@@ -6,7 +6,10 @@
     <title>ShapeMap Structure and Language</title>
     <!-- link rel="stylesheet" href="css/wgio.min.css"/ ask Iovka -->
     <link rel="stylesheet" href="../spec/local.css"/>
-
+    <style>
+      .error { border: medium solid #efe7e7; }
+      .error { background-color: #fff7f7; }
+    </style>
     <script src='https://www.w3.org/Tools/respec/respec-w3c-common'
             async="async" class='remove'></script>
 
@@ -123,6 +126,11 @@
       </ul>
 
       <p>
+        If the <a>status</a> property is absent, the <a>status</a> is assumed to be "conformant".
+        The <a>reason</a> and <a>appInfo</a> properties may also be absent but have no default value. 
+      </p>
+
+      <p>
         A <dfn>node selector</dfn> is a subset of a <dfn data-cite="sparql11-query#sparqlTriplePatterns">SPARQL triple pattern</dfn> with these restrictions:
       </p>
       <ul>
@@ -130,36 +138,65 @@
         <li>The focus node token appears in either the subject or the object position.</li>
         <li>The predicate position is filled by an IRI (<code>I</code> in the SPARQL definitions).</li>
       </ul>
-      
-    </section>
 
-    <section id="syntax">
-      <h2>ShapeMap syntax</h2>
       <p>
-        ShapeMaps can be easily transmitted an understood with a specialized syntax.
+        A <dnf>query ShapeMap</dnf> is a ShapeMap with only a <a>node</a>, <a>shape</a> and possibly a <a>status</a> property.
+        A query ShapeMap with a status must have a status of <code>"conformant"</code> or <code>"nonconformant"</code>.
       </p>
-      <div class="example">
-        <pre class="nohighlight">d:n1 @ s:S1, <span class="comment"># d: prefix from data, s: from schema</span>
-"foo"^^xsd:string@START!           <span class="comment"># "foo" did not match the start shape.</span>
-  /"missing :p1"                   <span class="comment"># The reason given is "missing :p1".</span>
-  $"appinfo":{"myextra1":["..."]} ,<span class="comment"># The application provide structural data.</span>
-"chat"@en-fr@&lt;http://...S3&gt;?, <span class="comment"># validate a literal</span>
-{<span class="keyword">FOCUS</span> :p2 "abcd"@en-us}@start:, <span class="comment"># validate (one) subject</span>
-{_ :p3 <span class="keyword">FOCUS</span>}@:start <span class="comment"># valide all objects of :p3</span></pre>
-      </div>
-      <ul>
-        <li>The <a>node</a> or <a>node selector</a> is before the '@'.</li>
-        <li>The <a>shape expression</a> label is immediately after the '@'.</li>
-        <li>The '<code>!</code>' means <a>node</a> does not conform to the <a>shape expression</a>.</li>
-        <li>For systems that peform validation asynchronously, '<code>?</code>' means that conformance has not been tested.</li>
-        <li>The absense of '<code>!</code>' or '<code>?</code>' means that <a>node</a> conforms to the <a>shape expression</a>.</li>
-        <li>The '<code>/</code>' character introduces a url-encoded reason string.</li>
-        <li>The '<code>$</code>' character precedes a JSON string which precedes the '<code>:</code>' character and a JSON value. At present, the only string permitted here is <code>"appinfo"</code>.</li>
-      </ul>
+
+      <p>
+        The combination of node and shape in a ShapeMap is unique.
+        The following would not be a valid ShapeMap:
+      </p>
+
+      <aside class="example" title="Invalid ShapeMaps - duplicate node/shape pairs">
+        <p>
+          This JSON ShapeMap would not be valid as it has two entries for a node/shape pair:
+        </p>
+        <pre class="error nohighlight">
+[
+  { "node": "&lt;http://data.example/node1&gt;,
+    "shape": "&lt;http://schema.example/Shape2&gt;,
+    <span class="lookit">"status": "nonconformant"</span> },
+  { "node": "&lt;http://data.example/node1&gt;,
+    "shape": "&lt;http://schema.example/Shape2&gt; }
+]</pre>
+        <p>
+          The above example has conflicting values for the <a>status</a>: the first asserts that <code>node1</code> does not conform to <code>Shape2</code>; the second has no status and so asserts the default which is that it does conform.
+          The following example is also invalid because it has duplicates even though they do not conflict:
+        </p>
+        <pre class="error nohighlight">
+[
+  { "node": "&lt;http://data.example/node1&gt;,
+    "shape": "&lt;http://schema.example/Shape2&gt; },
+  { "node": "&lt;http://data.example/node1&gt;,
+    "shape": "&lt;http://schema.example/Shape2&gt; }
+]</pre>
+      </aside>
+      
     </section>
 
     <section id="usage">
       <h2>ShapeMap usage</h2>
+      <p>
+        ShapeMaps are designed to address three purposes in the process of validation an RDF node against a ShEx schema.
+      </p>
+
+      <ul>
+        <li><dfn>goal</dfn> - the question posed, e.g. "does node1 conform to shape2?"</li>
+        <li><dfn>premise</dfn> - the assumptions, e.g. "assume node3 conforms to shape4."</li>
+        <li><dfn>result</dfn> - the outcome of a conformance check, e.g. "node1 conforms to shape2."</li>
+      </ul>
+
+      <p>
+        ShEx 2 does not define the use of premises in validation.
+        In principle, the information in a premise would be identical to that in a result.
+        It is expected that future work on federating validation will formalize this and provide a standard API.
+        Likewise, the <a>status</a> of <code>"pending"</code> is not currently defined but is expected to be defined in federation.
+        Applications using this value for status may be incompatible with later specifications of ShEx.
+      </p>
+
+      <h4>@@use cases to consider@@</h4>
       <ul>
         <li> node/shape pair<br/>
         <code>validate(schema, data, node, shape) => result</code>
@@ -186,6 +223,56 @@
         <li> ShapeMap as premise<br/>
         <code>validate(schema, data, premise, question) => results</code><br/>
         where premise, coverage and results are all subsets of the full structure.</li>
+      </ul>
+    </section>
+
+    <section id="syntax">
+      <h2>ShapeMap syntax</h2>
+      <p>
+        ShapeMaps can be easily transmitted an understood with a specialized syntax.
+      </p>
+      <aside class="example" title="Simple human-syntax ShapeMap">
+        <p>
+          A simple <a>query ShapeMap</a> might look like
+        </p>
+        <pre class="nohighlight">&lt;http://data.example/#n1&gt; @ &lt;http://data.example/#s&gt;, <span class="comment"># a simple node/shape pair</span>
+</pre>
+        <p>
+          and a response might look the same if there were no errors.
+        </p>
+      </aside>
+
+      <p>
+        Relative and prefixed IRIs in the node position are resolved against the application-defined prefix map and base URL for the data.
+        Likewise, schema IRI forms are resolved against the Schema PREFIX and namespace.
+      </p>
+
+      <aside class="example" title="ShapeMap with prefixed names">
+        <pre class="nohighlight">d:n1 @ s:S1, <span class="comment"># d: prefix from data, s: from schema</span>
+</pre>
+      </aside>
+
+      <p>
+        ... <a>status</a>, <a>reason</a>, <a>appInfo</a> ...
+      </p>
+
+      <div class="example">
+        <pre class="nohighlight">d:n1 @ s:S1, <span class="comment"># d: prefix from data, s: from schema</span>
+"foo"^^xsd:string@START!           <span class="comment"># "foo" did not match the start shape.</span>
+  /"missing :p1"                   <span class="comment"># The reason given is "missing :p1".</span>
+  $"appinfo":{"myextra1":["..."]} ,<span class="comment"># The application provide structural data.</span>
+"chat"@en-fr@&lt;http://...S3&gt;?, <span class="comment"># validate a literal</span>
+{<span class="keyword">FOCUS</span> :p2 "abcd"@en-us}@START, <span class="comment"># validate subjects of :p2 "abcd"</span>
+{_ :p3 <span class="keyword">FOCUS</span>}@START <span class="comment"># valide all objects of :p3</span></pre>
+      </div>
+      <ul>
+        <li>The <a>node</a> or <a>node selector</a> is before the '@'.</li>
+        <li>The <a>shape expression</a> label is immediately after the '@'.</li>
+        <li>The '<code>!</code>' means <a>node</a> does not conform to the <a>shape expression</a>.</li>
+        <li>For systems that peform validation asynchronously, '<code>?</code>' means that conformance has not been tested.</li>
+        <li>The absense of '<code>!</code>' or '<code>?</code>' means that <a>node</a> conforms to the <a>shape expression</a>.</li>
+        <li>The '<code>/</code>' character introduces a url-encoded reason string.</li>
+        <li>The '<code>$</code>' character precedes a JSON string which precedes the '<code>:</code>' character and a JSON value. At present, the only string permitted here is <code>"appinfo"</code>.</li>
       </ul>
     </section>
 
