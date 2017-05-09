@@ -97,6 +97,12 @@
         <li><dfn data-cite="rdf11-concepts#dfn-node" data-lt="rdf node|rdf nodes">Node</dfn>: one of <dfn>IRI</dfn>, <dfn data-cite="rdf11-concepts#dfn-blank-node">blank node</dfn>, <dfn>Literal</dfn></li>
         <li><dfn data-cite="rdf11-concepts#dfn-rdf-graph" data-lt="RDF Graph|RDF Graphs">Graph</dfn>: a set of <dfn data-cite="rdf11-concepts#dfn-rdf-triple" data-lt="triple|rdf triple|rdf triples">Triples</dfn> of (<dfn data-cite="rdf11-concepts#dfn-subject">subject</dfn>, <dfn data-cite="rdf11-concepts#dfn-predicate">predicate</dfn>, <dfn data-cite="rdf11-concepts#dfn-object">object</dfn>)</li>
       </ul>
+      <p>Validation type definition:
+        <ul>
+          <li><b>Primary validation: </b> Validation of node against a shape of which the mapping is present in the shape map</il>
+          <li><b>Recursive validation: </b> Validation of node against a shape, which triggered via the validation of another shape.</il> 
+        </ul>
+      </p>
     </section>
 
     <section id="conformance">
@@ -121,7 +127,7 @@
       <p>This API provides a clean mechanism that enables developers to determine
         conformance of <a>RDF Graphs</a> to a ShEx <a>Schema</a>.</p>
 
-      <p>The ShEx API uses <a>Promises</a> to represent
+      <p>The ShEx async API uses <a>Promises</a> to represent
         the result of the various asynchronous operations.
         <a data-cite="ECMASCRIPT-6.0#sec-promise-objects">Promises</a> are defined in [[ECMASCRIPT-6.0]].
         General use within specifications can be found in [[promises-guide]].</p>
@@ -141,10 +147,10 @@
 
         <div><button title="Copy IDL to clipboard" class="respec-button-copy-paste removeOnSave" data-clipboard-target="#idl-def-shexprocessor"><svg height="16" viewBox="0 0 14 16" width="14"><path fill-rule="evenodd" d="M2 13h4v1H2v-1zm5-6H2v1h5V7zm2 3V8l-3 3 3 3v-2h5v-2H9zM4.5 9H2v1h2.5V9zM2 12h2.5v-1H2v1zm9 1h1v2c-.02.28-.11.52-.3.7-.19.18-.42.28-.7.3H1c-.55 0-1-.45-1-1V4c0-.55.45-1 1-1h3c0-1.11.89-2 2-2 1.11 0 2 .89 2 2h3c.55 0 1 .45 1 1v5h-1V6H1v9h10v-2zM2 5h8c0-.55-.45-1-1-1H8c-.55 0-1-.45-1-1s-.45-1-1-1-1 .45-1 1-.45 1-1 1H3c-.55 0-1 .45-1 1z"></path></svg></button><pre class="def idl"><span class="idlInterface" id="idl-def-shexprocessor" data-idl="" data-title="ShExProcessor">[<span class="idlCtor"><span class="extAttrName"><a data-cite="WEBIDL#Constructor">Constructor</a></span></span>]
 interface <span class="idlInterfaceID">ShExProcessor</span> {
-<span class="idlMethod" id="idl-def-shexprocessor-validate(schema,graph,shapemap,options)" data-idl="" data-title="validate" data-dfn-for="shexprocessor">    <span class="idlMethType"><a data-cite="WEBIDL#idl-promise">USVString</a></span> <span class="idlMethName">validate</span>(<span class="idlParam"><span class="idlParamType"><a data-cite="WEBIDL#idl-USVString">USVString</a></span> <span class="idlParamName">schema</span></span>,
-                     <span class="idlParam"><span class="idlParamType">(<a data-cite="WEBIDL#idl-USVString">USVString</a> or <a>RDFGraph</a>)</span> <span class="idlParamName">graph</span></span>,
-                     <span class="idlParam">optional <span class="idlParamType"><a>USVString</a></span> <span class="idlParamName">shapeMap</span></span>,
-                     <span class="idlParam">optional <span class="idlParamType"><a>ShExOptions</a>?</span> <span class="idlParamName">options</span></span>) raises(ShExError);</span>
+<span class="idlMethod" id="idl-def-shexprocessor-validate(schema,graph,shapemap,options)" data-idl="" data-title="validate" data-dfn-for="shexprocessor">    <span class="idlMethType"><a data-cite="WEBIDL#idl-promise">ByteString</a></span> <span class="idlMethName">validate</span>(<span class="idlParam"><span class="idlParamType"><a data-cite="WEBIDL#idl-ByteString">ByteString</a></span> <span class="idlParamName">schema</span></span>,
+                     <span class="idlParam"><span class="idlParamType">(<a data-cite="WEBIDL#idl-ByteString">ByteString</a> or <a>RDFGraph</a>)</span> <span class="idlParamName">graph</span></span>,
+                     <span class="idlParam">optional <span class="idlParamType"><a>ByteString</a></span> <span class="idlParamName">shapeMap</span></span>,
+                     <span class="idlParam">optional <span class="idlParamType"><a>ShExOptions</a></span> <span class="idlParamName">options</span></span>) raises(ShExError);</span>
 };</span></pre></div>
 
         <dl>
@@ -155,35 +161,22 @@ interface <span class="idlInterfaceID">ShExProcessor</span> {
             <a href="#validation-requirement" class="sectionRef"></a>.
 
             <ol class="algorithm">
-              <li>If <a data-lt="ShExProcessor.validate.schema">validate.schema</a> has the form of
-                an <a>IRI</a>, set <em>schema</em> to the result of dereferencing
-                the IRI, treating the result as <a>ShExC</a>, <a>ShExJ</a>, or some
-                other RDF serialization, depending on the content-type of the result, and transforming
-                into the <a>ShExJ</a> abstract syntax for processing.</li>
-              <li>Otherwise, if a <a data-cite="WebIDL#idl-USVString">USVString</a>, <a data-lt="ShExProcessor.validate.schema">validate.schema</a> is treated
-                as a string, and parsed into the <a>ShExJ</a> abstract syntax, using
-                <a data-link-for="ShExOptions">format</a> as a hint to determine the
-                content-type.</li>
-              <li>Otherwise, if an <a>RDF Graph</a>, <a>schema</a> is transforming
-                into the <a>ShExJ</a> abstract syntax for processing.</li>
-              <li>If <a data-lt="ShExProcessor.validate.schema">validate.schema</a> is parsed
-                as <a>ShExC</a>, and a syntax error is found, reject <em>promise</em>
-                passing <a data-link-for="ShExErrorCode">syntax error</a>.</li>
-              <li>If a transformation to the <a>ShExJ</a> abstract syntax does not result in valid ShExJ,
-                reject <em>promise</em>, passing <a data-link-for="ShExErrorCode">invalid schema</a>.</li>
-              <li>If <a data-lt="ShExProcessor.validate.graph">validate.graph</a> has the form of
-                an <a>IRI</a>, set <em>graph</em> to the result of dereferencing
-                the IRI, treating the result an <a>RDF Graph</a> serialization, depending on the content-type of the result.
-                Otherwise, <a data-lt="ShExProcessor.validate.graph">validate.graph</a> either is
-                an <a>RDF Graph</a>, or a processor should use other means to transform it into an <a>RDF Graph</a>.</li>
-              <li>If shapeMap is null, create empty shape map</li>
-              <li>Parse the shapeMap parameter as <a data-lt="#shapemap-structure">ShapeMap</a>, if syntax error throw ShExError with code 'invalid shape map'</li>
-              <li>Add mappings to the shape map from the focusNodes to the start node in the schema with the status 'open'</li>
-              <li>Validate if the shape map does not contain duplicate entries, otherwise throw ShExError with code 'duplicated mapping'</li>
+              <li>Parse the <a data-lt="ShExProcessor.validate.schema">validate.schema</a> as given by the <a data-link-for="ShExOptions">formatSchema</a>.
+                In case of unresolvable URI raise ShExError with code 'URI unresolvable'.
+                In case of a parser syntax error raise ShExError with code 'syntax error'.
+                In case of error in the schema raise ShExError with code 'invalid schema'
+             <li>Parse the <a data-lt="ShExProcessor.validate.graph">validate.graph</a> as given by the <a data-link-for="ShExOptions">formatGraph</a>. If <a>RDFGraph</a> is supplied ignore the <a data-link-for="ShExOptions">formatGraph</a> option. 
+                 In case of unresolvable URI raise ShExError with code 'URI unresolvable'.
+                 In case of a parser syntax error raise ShExError with code 'syntax error'.
+               </li>
+              <li>If shapeMap is null, create empty shape map.</li>
+              <li>Parse the shapeMap parameter as <a data-lt="#shapemap-structure">ShapeMap</a>, if syntax error raise ShExError with code 'invalid shape map'.</li>
+              <li>Add a mapping to the shape map for each element in the option <a data-link-for="ShExOptions">focusNodes</a> to the start node in the schema with the status 'open'.</li>
+              <li>Validate if the shape map does not contain duplicate entries, otherwise throw ShExError with code 'duplicated mapping'.</li>
               <li>Repeat until resulting shape map does not contain any mappings with status 'open': For each mapping in the shape map with the status 'open' perform
                 validation using <em>schema</em> and <em>graph</em> according to the requirements in
                 <a href="#validation-requirement" class="sectionRef"></a>. Negate result if the 'negate' property == true. Store any validation failures into the 'appinfo' and 'reason' properties.
-                Any additional mappings created will be added to the resulting shape map, if option 'enableExpansion' == true. <br><br>
+                Any additional mappings created due to recursive validation will be added to the resulting shape map, if option 'enableExpansion' == true. <br><br>
                 NOTE: All entries within the shape map with status 'conformant' or 'nonconformant', will cause the validator to use these result and not perform a (recursive) validation of the mapping.</li>
               <li>Encode and return the resulting shapeMap with the encoding given in <a data-lt="#shapemap-structure">ShapeMap</a></li>
             </ol>
@@ -205,6 +198,11 @@ interface <span class="idlInterfaceID">ShExProcessor</span> {
             </dl>
           </dd>
         </dl>
+        <span class="ednote">ISSUE: What to do if a conflict occurs between a mapping in the mapping file that states that node X must not conform to shape Y, where as a 
+        recursive validation states otherwise (node X must conform to shape Y)</span>
+        <span class="ednote">ISSUE: Add async version of the validate function based on the promise construct, I think the sync version of validate should be mandatory,
+        whereas the async version should be an optional implementation. </span> <br>
+        <span class="ednote">ISSUE: Add a json representation (defined with IDL definitions) for the shape map instead of only the encoding given in <a data-lt="#shapemap-structure">ShapeMap</a>. </span>
       </section> <!-- end of ShExProcessor -->
 
       <section>
@@ -214,7 +212,7 @@ interface <span class="idlInterfaceID">ShExProcessor</span> {
           as described in <a href="#graph-access" class="sectionRef">Graph access</a>.</p>
 
         <div><button title="Copy IDL to clipboard" class="respec-button-copy-paste removeOnSave" data-clipboard-target="#idl-def-rdfgraph"><svg height="16" viewBox="0 0 14 16" width="14"><path fill-rule="evenodd" d="M2 13h4v1H2v-1zm5-6H2v1h5V7zm2 3V8l-3 3 3 3v-2h5v-2H9zM4.5 9H2v1h2.5V9zM2 12h2.5v-1H2v1zm9 1h1v2c-.02.28-.11.52-.3.7-.19.18-.42.28-.7.3H1c-.55 0-1-.45-1-1V4c0-.55.45-1 1-1h3c0-1.11.89-2 2-2 1.11 0 2 .89 2 2h3c.55 0 1 .45 1 1v5h-1V6H1v9h10v-2zM2 5h8c0-.55-.45-1-1-1H8c-.55 0-1-.45-1-1s-.45-1-1-1-1 .45-1 1-.45 1-1 1H3c-.55 0-1 .45-1 1z"></path></svg></button><pre class="def idl"><span class="idlInterface" id="idl-def-rdfgraph" data-idl="" data-title="RDFGraph">interface <span class="idlInterfaceID">RDFGraph</span> {
-<span class="idlMethod" id="idl-def-rdfgraph-bgp()" data-idl="" data-title="bgp" data-dfn-for="rdfgraph">    <span class="idlMethType"><a>void</a></span> <span class="idlMethName">bgp</span>(USVString subj,USVString pred,USVString obj,USVString objType);</span>
+<span class="idlMethod" id="idl-def-rdfgraph-bgp()" data-idl="" data-title="bgp" data-dfn-for="rdfgraph">    <span class="idlMethType"><a>void</a></span> <span class="idlMethName">bgp</span>(ByteString subj,ByteString pred,ByteString obj,ByteString objType);</span>
 };</span></pre></div>
 
         <dl data-dfn-for="RDFGraph">
@@ -222,6 +220,7 @@ interface <span class="idlInterfaceID">ShExProcessor</span> {
             Performs a <a data-cite="sparql11-query#BGPsparql">SPARQL Basic Graph Pattern</a> query on the graph.
           </dd>
         </dl>
+           <span class="ednote">TODO: define function as callback and complete the description</span>
      </section>
 
       <section>
@@ -231,11 +230,12 @@ interface <span class="idlInterfaceID">ShExProcessor</span> {
           <a>ShExProcessor</a> methods.</p>
 
         <div><button title="Copy IDL to clipboard" class="respec-button-copy-paste removeOnSave" data-clipboard-target="#idl-def-shexoptions"><svg height="16" viewBox="0 0 14 16" width="14"><path fill-rule="evenodd" d="M2 13h4v1H2v-1zm5-6H2v1h5V7zm2 3V8l-3 3 3 3v-2h5v-2H9zM4.5 9H2v1h2.5V9zM2 12h2.5v-1H2v1zm9 1h1v2c-.02.28-.11.52-.3.7-.19.18-.42.28-.7.3H1c-.55 0-1-.45-1-1V4c0-.55.45-1 1-1h3c0-1.11.89-2 2-2 1.11 0 2 .89 2 2h3c.55 0 1 .45 1 1v5h-1V6H1v9h10v-2zM2 5h8c0-.55-.45-1-1-1H8c-.55 0-1-.45-1-1s-.45-1-1-1-1 .45-1 1-.45 1-1 1H3c-.55 0-1 .45-1 1z"></path></svg></button><pre class="def idl"><span class="idlDictionary" id="idl-def-shexoptions" data-idl="" data-title="ShExOptions">dictionary <span class="idlDictionaryID">ShExOptions</span> {
-<span class="idlMember" id="idl-def-shexoptions-base" data-idl="" data-title="base" data-dfn-for="shexoptions">    <span class="idlMemberType"><a data-cite="WEBIDL#idl-USVString">USVString</a>?</span> <span class="idlMemberName">base</span>;</span>
-<span class="idlMember" id="idl-def-shexoptions-focusnodes" data-idl="" data-title="focusNodes" data-dfn-for="shexoptions">    <span class="idlMemberType"><a data-cite="WEBIDL#idl-sequence">sequence</a>?</span>  <span class="idlMemberName">focusNodes</span>;</span>
-<span class="idlMember" id="idl-def-shexoptions-format" data-idl="" data-title="format" data-dfn-for="shexoptions">    <span class="idlMemberType"><a data-cite="WEBIDL#idl-USVString">USVString</a></span>  <span class="idlMemberName">format</span> = <span class="idlMemberValue">"ShExC"</span>;</span>
-<span class="idlMember" id="idl-def-shexoptions-processingmode" data-idl="" data-title="processingMode" data-dfn-for="shexoptions">    <span class="idlMemberType"><a data-cite="WEBIDL#idl-USVString">USVString</a></span>  <span class="idlMemberName">processingMode</span> = <span class="idlMemberValue">"shex-2.0"</span>;</span>
-<span class="idlMember" id="idl-def-shexoptions-enableExpansion" data-idl="" data-title="enableExpansion" data-dfn-for="shexoptions">    <span class="idlMemberType"><a data-cite="WEBIDL#idl-USVString">boolean</a></span>  <span class="idlMemberName">enableExpansion</span> = <span class="idlMemberValue">true</span>;</span>
+<span class="idlMember" id="idl-def-shexoptions-base" data-idl="" data-title="base" data-dfn-for="shexoptions">    <span class="idlMemberType"><a data-cite="WEBIDL#idl-ByteString">ByteString</a>?</span> <span class="idlMemberName">base</span>;</span>
+<span class="idlMember" id="idl-def-shexoptions-focusnodes" data-idl="" data-title="focusNodes" data-dfn-for="shexoptions">    <span class="idlMemberType"><a data-cite="WEBIDL#idl-sequence">sequence</a>&lt;ByteString&gt;?</span>  <span class="idlMemberName">focusNodes</span>;</span>
+<span class="idlMember" id="idl-def-shexoptions-formatSchema" data-idl="" data-title="formatSchema" data-dfn-for="shexoptions">    <span class="idlMemberType"><a data-cite="WEBIDL#idl-ByteString">ByteString</a></span>  <span class="idlMemberName">formatSchema</span> = <span class="idlMemberValue">"ShExC"</span>;</span>
+<span class="idlMember" id="idl-def-shexoptions-formatGraph" data-idl="" data-title="formatGraph" data-dfn-for="shexoptions">    <span class="idlMemberType"><a data-cite="WEBIDL#idl-ByteString">ByteString</a></span>  <span class="idlMemberName">formatGraph</span> = <span class="idlMemberValue">"Turtle"</span>;</span>
+<span class="idlMember" id="idl-def-shexoptions-processingmode" data-idl="" data-title="processingMode" data-dfn-for="shexoptions">    <span class="idlMemberType"><a data-cite="WEBIDL#idl-ByteString">ByteString</a></span>  <span class="idlMemberName">processingMode</span> = <span class="idlMemberValue">"shex-2.0"</span>;</span>
+<span class="idlMember" id="idl-def-shexoptions-enableExpansion" data-idl="" data-title="enableExpansion" data-dfn-for="shexoptions">    <span class="idlMemberType"><a data-cite="WEBIDL#idl-ByteString">boolean</a></span>  <span class="idlMemberName">enableExpansion</span> = <span class="idlMemberValue">true</span>;</span>
 };</span></pre></div>
 
         <dl>
@@ -243,11 +243,44 @@ interface <span class="idlInterfaceID">ShExProcessor</span> {
           <dd>The base IRI to use when parsing <a data-lt="ShExProcessor.validate.schema">validate.schema</a>. If set, this overrides
             the <a data-lt="ShExProcessor.validate.schema">validate.schema</a>'s IRI.</dd>
           <dt><dfn data-dfn-for="ShExOptions">focusNodes</dfn></dt>
-          <dd>One or more <a>nodes</a> in
+          <dd>A list of one or more <a>node</a> or <a>node selector</a> referencing to nodes in the
             <a data-lt="ShExProcessor.validate.graph">validate.graph</a> which
-            are are checked for <a>conformance</a> against <a>start</a>.</dd>
-          <dt><dfn data-dfn-for="ShExOptions">format</dfn></dt>
-          <dd>One of <code>ShExC</code> or <code>ShExJ</code>.</dd>
+            are are checked for <a>conformance</a> against the <a>start</a> shape defined in the <a data-lt="ShExProcessor.validate.schema">validate.schema</a>.</dd>
+          <dt><dfn data-dfn-for="ShExOptions">formatSchema</dfn></dt>
+          <dd>One of: 
+            <ul>
+              <li><code>ShExC</code>: Parse <a data-lt="ShExProcessor.validate.schema">validate.schema</a> as ShExC.</li>
+              <li><code>ShExJ</code>: Parse <a data-lt="ShExProcessor.validate.schema">validate.schema</a> as ShExJ.</li>
+              <li><code>URI</code>: Resolve <a data-lt="ShExProcessor.validate.schema">validate.schema</a> and use content type to determine type</li>
+              <li><code>URI/ShExJ</code>: Resolve <a data-lt="ShExProcessor.validate.schema">validate.schema</a> and then parse result as ShExJ.</li>
+              <li><code>URI/ShExC</code>: Resolve <a data-lt="ShExProcessor.validate.schema">validate.schema</a> and then parse result as ShExC.</li>
+            </ul>
+            <span class="ednote">NOTE: left out option 'AUTOMATIC', because of potential security issues.</span>  <br> 
+            <span class="ednote">TODO: turn into enumeration</span> <br>
+            <span class="ednote">TODO: add ShExR with different RDF encodings</span>                
+          </dd>
+          <dt><dfn data-dfn-for="ShExOptions">formatGraph</dfn></dt>
+          <dd>One of: 
+            <ul>
+              <li><code>RDF/XML</code>: Parse <a data-lt="ShExProcessor.validate.graph">validate.graph</a> as RDF/XML.</li>
+              <li><code>Turtle</code>: Parse <a data-lt="ShExProcessor.validate.graph">validate.graph</a> as Turtle.</li>
+              <li><code>N-Triples</code>: Parse <a data-lt="ShExProcessor.validate.graph">validate.graph</a> as N-Triples.</li>
+              <li><code>N3</code>: Parse <a data-lt="ShExProcessor.validate.graph">validate.graph</a> as N3.</li>
+              <li><code>RDF/JSON</code>: Parse <a data-lt="ShExProcessor.validate.graph">validate.graph</a> as RDF/JSON.</li>
+              <li><code>JSON-LD</code>: Parse <a data-lt="ShExProcessor.validate.graph">validate.graph</a> as JSON-LD.</li>
+              <li><code>RDF-THRIFT</code>: Parse <a data-lt="ShExProcessor.validate.graph">validate.graph</a> as RDF-THRIFT.</li>
+              <li><code>URI</code>: Resolve <a data-lt="ShExProcessor.validate.graph">validate.graph</a> and use content type to determine type</li>
+              <li><code>URI/RDF/XML</code>: Resolve <a data-lt="ShExProcessor.validate.graph">validate.graph</a> and then parse result as RDF/XML.</li>
+              <li><code>URI/Turtle</code>: Resolve <a data-lt="ShExProcessor.validate.graph">validate.graph</a> and then parse result as Turtle.</li>
+              <li><code>URI/N-Triples</code>: Resolve <a data-lt="ShExProcessor.validate.graph">validate.graph</a> and then parse result as N-Triples.</li>
+              <li><code>URI/N3</code>: Resolve <a data-lt="ShExProcessor.validate.graph">validate.graph</a> and then parse result as N3.</li>
+              <li><code>URI/RDF/JSON</code>: Resolve <a data-lt="ShExProcessor.validate.graph">validate.graph</a> and then parse result as RDF/JSON.</li>
+              <li><code>URI/JSON-LD</code>: Resolve <a data-lt="ShExProcessor.validate.graph">validate.graph</a> and then parse result as JSON-LD.</li>
+              <li><code>URI/RDF-THRIFT</code>: Resolve <a data-lt="ShExProcessor.validate.graph">validate.graph</a> and then parse result as RDF-THRIFT.</li>
+            </ul>
+            <span class="ednote">NOTE: left out option 'AUTOMATIC', because of potential security issues.</span><br>   
+            <span class="ednote">TODO: turn into enumeration</span>                
+          </dd>
           <dt><dfn data-dfn-for="ShExOptions">processingMode</dfn></dt>
           <dd>If set to <code>shex-2.0</code>, the implementation has to produce
             exactly the same results as the algorithms defined in this specification.
@@ -260,9 +293,9 @@ interface <span class="idlInterfaceID">ShExProcessor</span> {
             with <code>shex</code> as they are reserved for future versions
             of this specification.</dd>
           <dt><dfn data-dfn-for="ShExOptions">enableExpansion</dfn></dt>
-          <dd>If enabled, new node to shape mapping found in the validation process will be added to the shape map. 
-          Otherwise any unknown mappings will automatically return false in validation process.
-           Recursive validation will also be triggered for mappings with the status 'open' when expansion is disabled</dd>
+          <dd>If enabled, any recursive validations potentially triggering new node to shape mapping will be added to the shape map. 
+           If disabled any unknown mappings will automatically return false in validation process. 
+           However, recursive validation will proceed for mappings that are in the shape map with the 'open' status (even when expansion is disabled).</dd>
         </dl>
       </section> <!-- end ShExOptions -->
 
@@ -285,7 +318,7 @@ interface <span class="idlInterfaceID">ShExProcessor</span> {
               The specific contents of error messages are outside the scope of this
               specification.</dd>
           </dl>
-        </section>
+         </section>
 
         <section class="informative">
           <h4>ShExErrorCode</h4>
@@ -298,6 +331,8 @@ interface <span class="idlInterfaceID">ShExProcessor</span> {
     <a href="#dom-shexerrorcode-syntax error" class="idlEnumItem">"syntax error"</a>,
     <a href="#dom-shexerrorcode-invalid shape map" class="idlEnumItem">"invalid shape map"</a>,
     <a href="#dom-shexerrorcode-duplicated mapping" class="idlEnumItem">"duplicated mapping"</a>
+    <a href="#dom-shexerrorcode-duplicated URI unresolvable" class="idlEnumItem">"URI unresolvable"</a>
+    
     
 };</span></pre></div>
 
@@ -315,8 +350,12 @@ interface <span class="idlInterfaceID">ShExProcessor</span> {
             <dd>Parsing <a data-lt="ShExProcessor.validate.shapemap">validate.shapemap</a> as
               Shape Map failed with a syntax error.</dd>  
             <dt><dfn>duplicated mapping</dfn></dt>
-            <dd>The shape map contains a duplicated mapping</dd>              
+            <dd>The shape map contains a duplicated mapping</dd>     
+            <dt><dfn>URI unresolvable</dfn></dt>
+            <dd>Schema or graph can not be resolved at given URI</dd>              
           </dl>
+                  <span class="ednote">TODO: the type of error codes could be expanded a bit</span> <br>          
+          
         </section>
     </section>
 
@@ -335,11 +374,11 @@ interface <span class="idlInterfaceID">ShExProcessor</span> {
       </ul>
 
       <p>
-        To query validation one need to add a set of mapping with the 'open' state to the validator, 
-        which will have either the <code>"conformant"</code> or <code>"nonconformant"</code> status after the validation completed. 
-        Mappings with the <code>"conformant"</code> or <code>"nonconformant"</code> status can be added, which will make the validator takes the results as trough, 
+        To query validation one need to add a set of mapping with the 'open' state to the shape map, 
+        which will have either the <code>"conformant"</code> or <code>"nonconformant"</code> status after the validation completed successfully. 
+        Mappings with the <code>"conformant"</code> or <code>"nonconformant"</code> status can be added, which informs the validator to take the results as truth, 
         independent of the actual truth. This enables the recycling of validation results of earlier validation process, 
-        which can be used to only validate elements that have been modified
+        which can for example be used to only validate elements that have been modified.
       </p>
 
       <p>
