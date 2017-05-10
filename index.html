@@ -9,6 +9,7 @@
     <style>
       .error { border: medium solid #efe7e7; }
       .error { background-color: #fff7f7; }
+      .example pre { border: medium solid #efe7e7; background-color: #f7fff7; }
     </style>
     <script src='https://www.w3.org/Tools/respec/respec-w3c-common'
             async="async" class='remove'></script>
@@ -473,6 +474,9 @@ interface <span class="idlInterfaceID">ShExProcessor</span> {
         <code>validate(schema, data, premise, question) => results</code><br/>
         where premise, coverage and results are all subsets of the full structure.</li>
       </ul>
+      <p>
+        @@missing: client gives query ShapeMap of 10k node/shape pairs and validator respond with only those that have changed.
+      </p>
     </section>
 
     <section id="syntax">
@@ -482,7 +486,7 @@ interface <span class="idlInterfaceID">ShExProcessor</span> {
       </p>
       <aside class="example" title="Simple human-syntax ShapeMap">
         <p>
-          A simple <a>query ShapeMap</a> might look like
+          A simple <a>query ShapeMap</a> might look like this:
         </p>
         <pre class="nohighlight">&lt;http://data.example/#n1&gt; @ &lt;http://data.example/#s&gt;? <span class="comment"># a simple node/shape pair</span>
 </pre>
