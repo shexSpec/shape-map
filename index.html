@@ -85,7 +85,7 @@
       <h2>Notation and Terminology</h2>
       <p>
         This document assumes an understanding of the ShEx notation and terminology.
-        Please see the associated sections of the <a href="../spec/index.html">Shape Expressions Language</a>.
+        <!-- Please see the associated sections of the <a href="../spec/index.html">Shape Expressions Language</a>. -->
       </p>
       <ul>
         <li><dfn data-cite="shex-semantics#dfn-shapeexpr" data-lt="shape expression|shex shape expression">ShapeExpression</dfn>: a boolean expression of ShEx shapes.</li>
@@ -116,14 +116,14 @@
     <section id="shapemap-structure">
       <h2>ShapeMap structure</h2>
       <p class="leadup">
-        <dfn data-cite="shex-semantics#dfn-shapemap" data-lt="shapemap|shape-map">ShapeMap</dfn>: a set of pairs of node and shape which may be annotated with the following properties:
+        <dfn data-cite="shex-semantics#dfn-shapemap" data-lt="shapemap|shape-map">ShapeMap</dfn>: a set of <dfn>shape association</dfn>s. Each shape association has a <a>node</a> and <a>shape</a> and , when used for the result of validation, may have a <a>status</a>, <a>reason</a> and/or <a>appInfo</a>:
       </p>
       <ul class="followup">
-        <li class="         leadup"><dfn>node</dfn>: an <a>RDF node</a> or a <a>node selector</a>.</li>
+        <li class="         leadup"><dfn>node</dfn>: an <a>RDF node</a> or a <a>triple pattern</a>.</li>
         <li class="followup leadup"><dfn>shape</dfn>: a <a>ShEx shape expression</a>.</li>
-        <li class="followup leadup"><dfn>status</dfn>: <em>[default="conformant"]</em> "pending" | "conformant" | "nonconformant".</li>
+        <li class="followup leadup"><dfn>status</dfn>: <em>[default="conformant"]</em> "nonconformant" | "conformant".</li>
         <li class="followup leadup"><dfn>reason</dfn>: <em>[optional]</em> a string stating a reason for failure or success.</li>
-        <li class="followup       "><dfn>appInfo</dfn>: <em>[optional]</em> application-specific JSON-LD structure</li>
+        <li class="followup       "><dfn>appInfo</dfn>: <em>[optional]</em> an application-specific JSON-LD structure</li>
       </ul>
 
       <p>
@@ -132,7 +132,18 @@
       </p>
 
       <p>
-        A <dfn>node selector</dfn> is a subset of a <dfn data-cite="sparql11-query#sparqlTriplePatterns">SPARQL triple pattern</dfn> with these restrictions:
+        A <dfn>triple pattern</dfn> has a subject, predicate and object.
+      </p>
+      <ul>
+        <li>The subject may be an IRI, a <a>focus selector</a> or a <a>wildcard</a>.</li>
+        <li>The predicate in an IRI.</li>
+        <li>The object may be an IRI, literal, <a>focus selector</a> or a <a>wildcard</a>.</li>
+      </ul>
+      <p>
+        A <dfn>focus selector</dfn> identifies the slot (subject or object) to be validated.
+        A <dfn>wildcard</dfn> indicates that that slot may hold any value.
+        A triple pattern has exactly one focus selectr
+        A triple pattern maps to a <dfn data-cite="sparql11-query#sparqlTriplePatterns">SPARQL triple pattern</dfn> with these restrictions:
       </p>
       <ul>
         <li><code>V</code> (the set of variables) is either a fresh variable or a known token to identify the <a>focus node</a>.</li>
@@ -141,18 +152,20 @@
       </ul>
 
       <p>
-        A <dfn>query ShapeMap</dfn> is a ShapeMap with only a <a>node</a>, <a>shape</a> and possibly a <a>status</a> property.
-        A query ShapeMap with a status must have a status of <code>"conformant"</code> or <code>"nonconformant"</code>.
+        A <dfn>query ShapeMap</dfn> is a ShapeMap with exactly a <a>node</a> and <a>shape</a> property.
       </p>
 
       <p>
-        A <dfn>ground ShapeMap</dfn> is a ShapeMap in which all<a>node selector</a>/shape pairs have been replaced by a set of zero or more node/shape pairs.
-        The ShEx validation process takes as input a ground ShapeMap.
+        A <dfn>fixed ShapeMap</dfn> is a ShapeMap with no <a>status</a>, <a>reason</a> or <a>appInfo</a> properties and every <a>node</a> property is an RDF Node.
+        The ShEx validation process takes as input a fixed ShapeMap.
+      </p>
+      
+      <p>
+        A <dfn>result ShapeMap</dfn> is a ShapeMap with an optional <a>status</a>, <a>reason</a> and <a>appInfo</a> property.
       </p>
       
       <p>
         The combination of node and shape in a ShapeMap is unique.
-        The following would not be a valid ShapeMap:
       </p>
 
       <aside class="example" title="Invalid ShapeMaps - duplicate node/shape pairs">
@@ -185,103 +198,66 @@
     <section id="usage">
       <h2>ShapeMap usage</h2>
       <p>
-        ShapeMaps are designed to address three purposes in the process of validation an RDF node against a ShEx schema.
+        ShapeMaps are designed to express the <a>goal</a> and <a>result</a> of validating an RDF node against a ShEx schema.
       </p>
 
       <ul>
-        <li><dfn>goal</dfn> - the question posed, e.g. "does node1 conform to shape2?"</li>
-        <li><dfn>premise</dfn> - the assumptions, e.g. "assume node3 conforms to shape4."</li>
-        <li><dfn>result</dfn> - the outcome of a conformance check, e.g. "node1 conforms to shape2."</li>
+        <li><dfn>goal</dfn> - a <a>query ShapeMap</a> or <a>fixed ShapeMap</a> expressing the question posed, e.g. "does node1 conform to shape2?"</li>
+        <li><dfn>result</dfn> - a <a>result ShapeMap</a> expressing the outcome of a conformance check, e.g. "node1 conforms to shape2."</li>
       </ul>
 
       <p>
-        ShEx 2 does not define the use of premises in validation.
-        In principle, the information in a premise would be identical to that in a result.
-        It is expected that future work on federating validation will formalize this and provide a standard API.
-        Likewise, the <a>status</a> of <code>"pending"</code> is not currently defined but is expected to be defined in federation.
-        Applications using this value for status may be incompatible with later specifications of ShEx.
+        A query ShapeMap is converted to fixed ShapeMap to be used as the input to the validation process.
+        This process takes as input a query ShapeMap and a graph and produces fixed ShapeMap.
+        For a query ShapeMap <code>q</code>, a graph <code>g</code>, for each <a>shape association</a> <code>a</code> in <code>q</code>:
       </p>
-
-      <h4>@@use cases to consider@@</h4>
       <ul>
-        <li> node/shape pair<br/>
-        <code>validate(schema, data, node, shape) => result</code>
+        <li>If <code>a</code>.node is an RDF graph, <code>a</code> is in the fixed ShapeMap.</li>
+        <li>If <code>a</code>.node is <a>triple pattern</a>, let <code>p</code> be a <a href="https://www.w3.org/TR/sparql11-query/#defn_TriplePattern">SPARQL Triple Pattern</a> where
         <ul>
-          <li> result is T/F </li>
-          <li> result is ShapeMap
-          <ul>
-            <li> return orig ShapeMap with status </li>
-            <li> return orig ShapeMap with status plus related nodes
-            <ul>
-              <li> related nodes = all NodeConstraints and Shapes<br/>
-              <code>n1@s1,n1@s2!</code>
-              </li>
-              <li> related nodes = labeled NodeConstraints and Shapes </li>
-              <li> related nodes = labeled Shapes </li>
-              <li> related nodes = coreferenced Shapes </li>
-            </ul></li>
-          </ul></li>
-        </ul></li>
-        <li> set of node/shape pair<br/>
-        <code>validate(schema, data, question) => results</code>
+          <li>If <code>a</code>'s subject is a <a>focus selector</a> or a <a>wildcard</a>, <code>p</code>'s  subject is a fresh variable, otherwise <code>p</code>'s subect is <code>a</code>'s subject.</li>
+          <li><code>p</code>'s predicate is <code>a</code>'s predicate.</li>
+          <li>If <code>a</code>'s object is a <a>focus selector</a> or a <a>wildcard</a>, <code>p</code>'s  object is a fresh variable, otherwise <code>p</code>'s subect is <code>a</code>'s object.</li>
+        </ul>
         </li>
-        <li> long-running process </li>
-        <li> ShapeMap as premise<br/>
-        <code>validate(schema, data, premise, question) => results</code><br/>
-        where premise, coverage and results are all subsets of the full structure.</li>
       </ul>
-      <p>
-        @@missing: client gives query ShapeMap of 10k node/shape pairs and validator respond with only those that have changed.
-      </p>
     </section>
 
     <section id="syntax">
-      <h2>ShapeMap syntax</h2>
+      <h2>Query and Fixed ShapeMap syntax</h2>
       <p>
-        ShapeMaps can be easily transmitted an understood with a specialized syntax.
+        ShapeMaps can be easily transmitted and understood with a specialized syntax.
       </p>
       <aside class="example" title="Simple human-syntax ShapeMap">
         <p>
-          A simple <a>query ShapeMap</a> might look like this:
+          A simple <a>fixed ShapeMap</a> might look like this:
         </p>
-        <pre class="nohighlight">&lt;http://data.example/#n1&gt; @ &lt;http://data.example/#s&gt;, <span class="comment"># a simple node/shape pair</span>
+        <pre class="nohighlight">&lt;http://data.example/#n1&gt; @ &lt;http://data.example/#S2&gt;, <span class="comment"># a simple node/shape pair</span>
 </pre>
         <p>
-          and a response might look the same if there were no errors.
+          and a <a>result ShapeMap</a> might look the same if there were no errors.
+          It also could include a <code>status="conformant"</code> if there were no errors.
         </p>
       </aside>
 
       <p>
-        Relative and prefixed IRIs in the node position are resolved against the application-defined prefix map and base URL for the data.
-        Likewise, schema IRI forms are resolved against the Schema PREFIX and namespace.
+        A query ShapeMap can include <a>shape association</a>s with both <a>RDF node</a>s and <a>triple pattern</a>.
       </p>
-
-      <aside class="example" title="ShapeMap with prefixed names">
-        <pre class="nohighlight">d:n1 @ s:S1, <span class="comment"># d: prefix from data, s: from schema</span>
-</pre>
-      </aside>
-
-      <p>
-        ... <a>status</a>, <a>reason</a>, <a>appInfo</a> ...
-      </p>
-
       <div class="example">
-        <pre class="nohighlight">d:n1 @ s:S1, <span class="comment"># d: prefix from data, s: from schema</span>
-"foo"^^xsd:string@START!           <span class="comment"># "foo" did not match the start shape.</span>
-  /"missing :p1"                   <span class="comment"># The reason given is "missing :p1".</span>
-  $"appinfo":{"myextra1":["..."]} ,<span class="comment"># The application provide structural data.</span>
-"chat"@en-fr@&lt;http://...S3&gt;?, <span class="comment"># validate a literal</span>
-{<span class="keyword">FOCUS</span> :p2 "abcd"@en-us}@START, <span class="comment"># validate subjects of :p2 "abcd"</span>
-{_ :p3 <span class="keyword">FOCUS</span>}@START <span class="comment"># valide all objects of :p3</span></pre>
+        <pre class="nohighlight"><span class="comment"># Validate a simple node/shape pair.</span>
+&lt;http://data.example/#n1&gt; @ &lt;http://data.example/#S2&gt;,
+<span class="comment"># Validate a literal as S3.</span>
+"chat"@en-fr@&lt;http://...S3&gt;?,
+<span class="comment"># validate everything with type Some/Type as the START shape.</span>
+{<span class="keyword">FOCUS</span> &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt; &lt;http://schema.example/Some/Type&gt;}@START,
+<span class="comment"># Valide all objects of p3.</span>
+{_ &lt;http://...p3&gt; <span class="keyword">FOCUS</span>}@START</pre>
       </div>
       <ul>
-        <li>The <a>node</a> or <a>node selector</a> is before the '@'.</li>
+        <li>The <a>node</a> or <a>triple pattern</a> is before the '@'.</li>
         <li>The <a>shape expression</a> label is immediately after the '@'.</li>
-        <li>The '<code>!</code>' means <a>node</a> does not conform to the <a>shape expression</a>.</li>
-        <li>For systems that peform validation asynchronously, '<code>?</code>' means that conformance has not been tested.</li>
-        <li>The absense of '<code>!</code>' or '<code>?</code>' means that <a>node</a> conforms to the <a>shape expression</a>.</li>
-        <li>The '<code>/</code>' character introduces a url-encoded reason string.</li>
-        <li>The '<code>$</code>' character precedes a JSON string which precedes the '<code>:</code>' character and a JSON value. At present, the only string permitted here is <code>"appinfo"</code>.</li>
+        <li>The '<code>FOCUS</code>' keyword is a <a>focus selector</a>.</li>
+        <li>The '<code>_</code>' character is a <a>wildcard</a>.</li>
       </ul>
     </section>
 
@@ -291,21 +267,21 @@
 <table style="border: 0; border-top: thick solid white; ">
 
 <tbody class="prod">
-<tr style="vertical-align: baseline"><td id="prod-literal">[<span class="prodNo">1</span>]   </td>   <td><code class="production prod">shapeMap</code></td>       <td>   ::=   </td><td><code class="content"><span class="prod"><a class="grammarRef" href="#prod-pair">pair</a></span> (',' <span class="prod"><a class="grammarRef" href="#prod-pair">pair</a></span>)*;</code></td></tr>
-<tr style="vertical-align: baseline"><td id="prod-literal">[<span class="prodNo">2</span>]   </td>   <td><code class="production prod">pair</code></td>           <td>   ::=   </td><td><code class="content"><span class="prod"><a class="grammarRef" href="#prod-nodeSelector">nodeSelector</a></span> <span class="prod"><a class="grammarRef" href="#prod-shapeSelector">shapeSelector</a></span> <span class="prod"><a class="grammarRef" href="#prod-status">status</a></span>? <span class="prod"><a class="grammarRef" href="#prod-reason">reason</a></span>? <span class="prod"><a class="grammarRef" href="#prod-jsonAttributes">jsonAttributes</a></span>?</code></td></tr>
+<tr style="vertical-align: baseline"><td id="prod-literal">[<span class="prodNo">1</span>]   </td>   <td><code class="production prod">shapeMap</code></td>       <td>   ::=   </td><td><code class="content"><span class="prod"><a class="grammarRef" href="#prod-shapeAssociation">shapeAssociation</a></span> (',' <span class="prod"><a class="grammarRef" href="#prod-shapeAssociation">shapeAssociation</a></span>)*;</code></td></tr>
+<tr style="vertical-align: baseline"><td id="prod-literal">[<span class="prodNo">2</span>]   </td>   <td><code class="production prod">shapeAssociation</code></td>           <td>   ::=   </td><td><code class="content"><span class="prod"><a class="grammarRef" href="#prod-nodeSelector">nodeSelector</a></span> <span class="prod"><a class="grammarRef" href="#prod-shapeSelector">shapeSelector</a></span><!-- <span class="prod"><a class="grammarRef" href="#prod-status">status</a></span>? <span class="prod"><a class="grammarRef" href="#prod-reason">reason</a></span>? <span class="prod"><a class="grammarRef" href="#prod-jsonAttributes">jsonAttributes</a></span>? --></code></td></tr>
 <tr style="vertical-align: baseline"><td id="prod-literal">[<span class="prodNo">3</span>]   </td>   <td><code class="production prod">nodeSelector</code></td>   <td>   ::=   </td><td><code class="content"><span class="prod"><a class="grammarRef" href="#prod-objectTerm">objectTerm</a></span> | <span class="prod"><a class="grammarRef" href="#prod-triplePattern">triplePattern</a></span></code></td></tr>
-<tr style="vertical-align: baseline"><td id="prod-literal">[<span class="prodNo">4</span>]   </td>   <td><code class="production prod">subjectTerm</code></td>    <td>   ::=   </td><td><code class="content"><span class="prod"><a class="grammarRef" href="#prod-iri">iri</a></span> | <span class="prod"><a class="grammarRef" href="#term-BLANK_NODE_LABEL">BLANK_NODE_LABEL</a></span></code></td></tr>
+<tr style="vertical-align: baseline"><td id="prod-literal">[<span class="prodNo">4</span>]   </td>   <td><code class="production prod">subjectTerm</code></td>    <td>   ::=   </td><td><code class="content"><span class="prod"><a class="grammarRef" href="#prod-iri">iri</a></span><!-- | <span class="prod"><a class="grammarRef" href="#term-BLANK_NODE_LABEL">BLANK_NODE_LABEL</a></span> --></code></td></tr>
 <tr style="vertical-align: baseline"><td id="prod-literal">[<span class="prodNo">5</span>]   </td>   <td><code class="production prod">objectTerm</code></td>     <td>   ::=   </td><td><code class="content"><span class="prod"><a class="grammarRef" href="#prod-subjectTerm">subjectTerm</a></span> | <span class="prod"><a class="grammarRef" href="#prod-literal">literal</a></span></code></td></tr>
 <tr style="vertical-align: baseline"><td id="prod-literal">[<span class="prodNo">6</span>]   </td>   <td><code class="production prod">triplePattern</code></td>  <td>   ::=   </td><td><code class="content">'{' "FOCUS" <span class="prod"><a class="grammarRef" href="#prod-iri">iri</a></span> (<span class="prod"><a class="grammarRef" href="#prod-objectTerm">objectTerm</a></span> | '_') '}'<br/>
                                                                                                                                                                          | '{' (<span class="prod"><a class="grammarRef" href="#prod-subjectTerm">subjectTerm</a></span> | '_') <span class="prod"><a class="grammarRef" href="#prod-iri">iri</a></span> "FOCUS" '}'</code></td></tr>
 <tr style="vertical-align: baseline"><td id="prod-literal">[<span class="prodNo">7</span>]   </td>   <td><code class="production prod">shapeSelector</code></td>  <td>   ::=   </td><td><code class="content">'@' (<span class="prod"><a class="grammarRef" href="#prod-iri">iri</a></span> | "START") | <span class="prod"><a class="grammarRef" href="#term-ATSTART">ATSTART</a></span> | <span class="prod"><a class="grammarRef" href="#term-ATPNAME_NS">ATPNAME_NS</a></span> | <span class="prod"><a class="grammarRef" href="#term-ATPNAME_LN">ATPNAME_LN</a></span></code></td></tr>
-<tr style="vertical-align: baseline"><td id="prod-literal">[<span class="prodNo">8</span>]   </td>   <td><code class="production prod">status</code></td>         <td>   ::=   </td><td><code class="content">'!' | '?'</code></td></tr>
+<!-- <tr style="vertical-align: baseline"><td id="prod-literal">[<span class="prodNo">8</span>]   </td>   <td><code class="production prod">status</code></td>         <td>   ::=   </td><td><code class="content">'!' | '?'</code></td></tr>
 <tr style="vertical-align: baseline"><td id="prod-literal">[<span class="prodNo">9</span>]   </td>   <td><code class="production prod">reason</code></td>         <td>   ::=   </td><td><code class="content">'/' <span class="prod"><a class="grammarRef" href="#prod-string">string</a></span></code></td></tr>
 <tr style="vertical-align: baseline"><td id="prod-literal">[<span class="prodNo">10</span>]   </td>  <td><code class="production prod">jsonAttributes</code></td> <td>   ::=   </td><td><code class="content">'$' '"<span class="prod"><a class="grammarRef" href="#prod-appinfo">appinfo</a></span>"' ':' <span class="prod"><a class="grammarRef" href="#prod-jsonValue">jsonValue</a></span></code></td></tr>
 <tr style="vertical-align: baseline"><td id="prod-literal">[<span class="prodNo">11</span>]   </td>  <td><code class="production prod">jsonValue</code></td>      <td>   ::=   </td><td><code class="content">'<span class="prod"><a class="grammarRef" href="#prod-false">false</a></span>' | '<span class="prod"><a class="grammarRef" href="#prod-null">null</a></span>' | '<span class="prod"><a class="grammarRef" href="#prod-true">true</a></span>' | <span class="prod"><a class="grammarRef" href="#prod-jsonObject">jsonObject</a></span> | <span class="prod"><a class="grammarRef" href="#prod-jsonArray">jsonArray</a></span> | <span class="prod"><a class="grammarRef" href="#term-DOUBLE">DOUBLE</a></span> | <span class="prod"><a class="grammarRef" href="#term-STRING_LITERAL2">STRING_LITERAL2</a></span>;</code></td></tr>
 <tr style="vertical-align: baseline"><td id="prod-literal">[<span class="prodNo">12</span>]   </td>  <td><code class="production prod">jsonObject</code></td>     <td>   ::=   </td><td><code class="content">'{' (<span class="prod"><a class="grammarRef" href="#prod-jsonMember">jsonMember</a></span> (',' <span class="prod"><a class="grammarRef" href="#prod-jsonMember">jsonMember</a></span>)*)? '}';</code></td></tr>
 <tr style="vertical-align: baseline"><td id="prod-literal">[<span class="prodNo">13</span>]   </td>  <td><code class="production prod">jsonMember</code></td>     <td>   ::=   </td><td><code class="content"><span class="prod"><a class="grammarRef" href="#term-STRING_LITERAL2">STRING_LITERAL2</a></span> ':' <span class="prod"><a class="grammarRef" href="#prod-jsonValue">jsonValue</a></span>;</code></td></tr>
-<tr style="vertical-align: baseline"><td id="prod-literal">[<span class="prodNo">14</span>]   </td>  <td><code class="production prod">jsonArray</code></td>      <td>   ::=   </td><td><code class="content">'[' (<span class="prod"><a class="grammarRef" href="#prod-jsonValue">jsonValue</a></span> (',' <span class="prod"><a class="grammarRef" href="#prod-jsonValue">jsonValue</a></span>)*)? ']';</code></td></tr>
+<tr style="vertical-align: baseline"><td id="prod-literal">[<span class="prodNo">14</span>]   </td>  <td><code class="production prod">jsonArray</code></td>      <td>   ::=   </td><td><code class="content">'[' (<span class="prod"><a class="grammarRef" href="#prod-jsonValue">jsonValue</a></span> (',' <span class="prod"><a class="grammarRef" href="#prod-jsonValue">jsonValue</a></span>)*)? ']';</code></td></tr> -->
 </tbody>
 
 <tbody class="prod">
@@ -369,18 +345,18 @@
 <td id="prod-iri">[<span class="prodNo">136s</span>]   </td>
 <td><code class="production prod">iri</code></td>
 <td>   ::=   </td>
-<td><code class="content"><span class="prod"><a class="grammarRef" href="#term-IRIREF">IRIREF</a></span> | <span class="prod"><a class="grammarRef" href="#prod-prefixedName">prefixedName</a></span></code></td>
+<td><code class="content"><span class="prod"><a class="grammarRef" href="#term-IRIREF">IRIREF</a></span><!-- | <span class="prod"><a class="grammarRef" href="#prod-prefixedName">prefixedName</a></span> --></code></td>
 </tr>
 </tbody>
 
-<tbody class="prod">
+<!-- <tbody class="prod">
 <tr style="vertical-align: baseline">
 <td id="prod-prefixedName">[<span class="prodNo">137s</span>]   </td>
 <td><code class="production prod">prefixedName</code></td>
 <td>   ::=   </td>
 <td><code class="content"><span class="prod"><a class="grammarRef" href="#term-PNAME_LN">PNAME_LN</a></span> | <span class="prod"><a class="grammarRef" href="#term-PNAME_NS">PNAME_NS</a></span></code></td>
 </tr>
-</tbody>
+</tbody> -->
 
 <tbody class="grammarParagraph">
   <tr><td colspan="4">
@@ -397,23 +373,23 @@
 </tr>
 </tbody>
 
-<tbody class="term">
+<!-- <tbody class="term">
 <tr style="vertical-align: baseline">
 <td id="term-PNAME_NS">[<span class="prodNo">140s</span>]   </td>
 <td>&lt;<code class="production term">PNAME_NS</code>&gt;</td>
 <td>   ::=   </td>
 <td><code class="content"><span class="prod"><a class="grammarRef" href="#term-PN_PREFIX">PN_PREFIX</a></span>? ":"</code></td>
 </tr>
-</tbody>
+</tbody> -->
 
-<tbody class="term">
+<!-- <tbody class="term">
 <tr style="vertical-align: baseline">
 <td id="term-PNAME_LN">[<span class="prodNo">141s</span>]   </td>
 <td>&lt;<code class="production term">PNAME_LN</code>&gt;</td>
 <td>   ::=   </td>
 <td><code class="content"><span class="prod"><a class="grammarRef" href="#term-PNAME_NS">PNAME_NS</a></span> <span class="prod"><a class="grammarRef" href="#term-PN_LOCAL">PN_LOCAL</a></span></code></td>
 </tr>
-</tbody>
+</tbody> -->
 
 <tbody class="term">
 <tr style="vertical-align: baseline">
