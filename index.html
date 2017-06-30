@@ -65,7 +65,7 @@
         A <span class="math">node constraint</span> describes an RDF node (<a>IRI</a>, <a>blank node</a> or <a>literal</a>) and a <span class="math">shape</span> describes the <a>triples</a> involving nodes in an <a>RDF graph</a>.
         The ShapeMap language associates RDF nodes with ShEx shapes.
         These associations can be used to state candidate shape maps as an input to the validation process.
-        They can be the output of a validation process, where the ShEx engine reports the conformance of RDF nodes with respect to ShEx Shapes.
+        They can be the output of a validation process, where the ShEx engine reports the conformance of RDF nodes with respect to ShEx shapes.
       </p>
       <p>
         This document defines the ShapeMap language.
@@ -88,15 +88,15 @@
         <!-- Please see the associated sections of the <a href="../spec/index.html">Shape Expressions Language</a>. -->
       </p>
       <ul>
-        <li><dfn data-cite="shex-semantics#dfn-shapeexpr" data-lt="shape expression|shex shape expression">ShapeExpression</dfn>: a boolean expression of ShEx shapes.</li>
+        <li><dfn data-cite="shex-semantics#dfn-shapeexpr" data-lt="shape expression|shex shape expression">ShapeExpression</dfn>: a Boolean expression of ShEx shapes.</li>
         <li><dfn data-lt="focus node|focus">focus node</dfn>: a node, potentially in an RDF graph, to be inspected for conformance with a shape expression.</li>
       </ul>
       <p>
         ShExMap uses the following terms from RDF semantics [[!rdf11-mt]]:
       </p>
       <ul>
-        <li><dfn data-cite="rdf11-concepts#dfn-node" data-lt="rdf node|rdf nodes">Node</dfn>: one of <dfn>IRI</dfn>, <dfn data-cite="rdf11-concepts#dfn-blank-node">blank node</dfn>, <dfn>Literal</dfn></li>
-        <li><dfn data-cite="rdf11-concepts#dfn-rdf-graph" data-lt="RDF Graph|RDF Graphs">Graph</dfn>: a set of <dfn data-cite="rdf11-concepts#dfn-rdf-triple" data-lt="triple|rdf triple|rdf triples">Triples</dfn> of (<dfn data-cite="rdf11-concepts#dfn-subject">subject</dfn>, <dfn data-cite="rdf11-concepts#dfn-predicate">predicate</dfn>, <dfn data-cite="rdf11-concepts#dfn-object">object</dfn>)</li>
+        <li><dfn data-cite="rdf11-concepts#dfn-node" data-lt="rdf node|rdf nodes">Node</dfn>: one of <dfn>IRI</dfn>, <dfn data-cite="rdf11-concepts#dfn-blank-node">blank node</dfn>, <dfn>Literal</dfn>.</li>
+        <li><dfn data-cite="rdf11-concepts#dfn-rdf-graph" data-lt="RDF Graph|RDF Graphs">Graph</dfn>: a set of <dfn data-cite="rdf11-concepts#dfn-rdf-triple" data-lt="triple|rdf triple|rdf triples">Triples</dfn> of (<dfn data-cite="rdf11-concepts#dfn-subject">subject</dfn>, <dfn data-cite="rdf11-concepts#dfn-predicate">predicate</dfn>, <dfn data-cite="rdf11-concepts#dfn-object">object</dfn>).</li>
       </ul>
     </section>
 
@@ -140,9 +140,9 @@
       </ul>
       <p>
         A <dfn>focus selector</dfn> identifies the slot (subject or object) to be validated.
-        A <dfn>wildcard</dfn> indicates that that slot may hold any value.
-        A triple pattern has exactly one focus selectr
-        A triple pattern maps to a <dfn data-cite="sparql11-query#sparqlTriplePatterns">SPARQL triple pattern</dfn> with these restrictions:
+        A <dfn>wildcard</dfn> indicates that the slot may hold any value.
+        A triple pattern has exactly one focus selector.
+        A triple pattern maps to a <dfn data-cite="sparql11-query#sparqlTriplePatterns">SPARQL triple pattern</dfn> with the following restrictions:
       </p>
       <ul>
         <li><code>V</code> (the set of variables) is either a fresh variable or a known token to identify the <a>focus node</a>.</li>
@@ -206,8 +206,8 @@
       </ul>
 
       <p>
-        A query ShapeMap is converted to fixed ShapeMap to be used as the input to the validation process.
-        This process takes as input a query ShapeMap and a graph and produces fixed ShapeMap.
+        A query ShapeMap is converted to a fixed ShapeMap to be used as the input to the validation process.
+        This process takes as input a query ShapeMap and a graph and produces a fixed ShapeMap.
         For a query ShapeMap <code>q</code>, a graph <code>g</code>, for each <a>shape association</a> <code>a</code> in <code>q</code>:
       </p>
       <ul>
