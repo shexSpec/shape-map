@@ -116,11 +116,10 @@
     <section id="shapemap-structure">
       <h2>ShapeMap structure</h2>
       <p class="leadup">
-        <dfn data-cite="shex-semantics#dfn-shapemap" data-lt="shapemap|shape-map">ShapeMap</dfn>: a set of <dfn data-lt="shape associations">shape association</dfn>s. Each shape association associates a <a>target pattern</a> with <a>shape</a> and , when used for the result of validation, may have a <a>status</a>, <a>reason</a> and/or <a>appInfo</a>:
+        <dfn data-cite="shex-semantics#dfn-shapemap" data-lt="shapemap|shape-map">ShapeMap</dfn>: a set of <dfn data-lt="shape associations">shape association</dfn>s. Each shape association associates a <a>graph match</a> with <a>shape expression</a> and, when used for the result of validation, may have a <a>status</a>, <a>reason</a> and/or <a>appInfo</a>:
       </p>
       <ul class="followup">
-        <li class="         leadup"><dfn>target pattern</dfn>: an RDF <a>node</a> IRI or a <a>triple pattern</a>.</li>
-        <li class="followup leadup"><dfn>shape</dfn>: a <a>ShEx shape expression</a>.</li>
+        <li class="         leadup"><dfn>graph match</dfn>: a <a>node match</a> or a <a>triple pattern</a>.</li>
         <li class="followup leadup"><dfn>status</dfn>: <em>[default="conformant"]</em> "nonconformant" | "conformant".</li>
         <li class="followup leadup"><dfn>reason</dfn>: <em>[optional]</em> a string stating a reason for failure or success.</li>
         <li class="followup       "><dfn>appInfo</dfn>: <em>[optional]</em> an application-specific JSON-LD structure</li>
@@ -129,6 +128,10 @@
       <p>
         If the <a>status</a> property is absent, the <a>status</a> is assumed to be "conformant".
         The <a>reason</a> and <a>appInfo</a> properties may also be absent but have no default value. 
+      </p>
+
+      <p>
+        A <dfn>node match</dfn> may be an IRI, blank node identifier, or (for an object pattern) literal.
       </p>
 
       <p>
@@ -151,11 +154,11 @@
       </ul>
 
       <p>
-        A <dfn>query ShapeMap</dfn> is a ShapeMap in which each shape association associates exactly one <a>target pattern</a> with one <a>shape</a>.
+        A <dfn>query ShapeMap</dfn> is a ShapeMap in which each shape association associates exactly one <a>graph match</a> with one <a>shape</a>.
       </p>
 
       <p>
-        A <dfn>fixed ShapeMap</dfn> is a ShapeMap in which each shape association has no <a>status</a>, <a>reason</a> or <a>appInfo</a> properties and every <a>target pattern</a> property is an RDF node IRI.
+        A <dfn>fixed ShapeMap</dfn> is a ShapeMap in which each shape association has no <a>status</a>, <a>reason</a> or <a>appInfo</a> properties and every <a>graph match</a> property is an RDF node IRI.
         The ShEx validation process takes as input a fixed ShapeMap.
       </p>
       
@@ -164,7 +167,7 @@
       </p>
       
       <p>
-        Each ShapeMap is a set of unique shape associations, each of which has one target pattern and one shape.
+        Each ShapeMap is a set of unique shape associations, each of which has one graph match and one shape.
       </p>
 
       <aside class="example" title="Invalid ShapeMaps - duplicate node/shape pairs">
