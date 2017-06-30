@@ -123,7 +123,7 @@
       </p>
       <ul class="followup">
         <li class="         leadup"><dfn>nodeSelector</dfn>: an <a>RDF node</a>, or a <a>triple pattern</a> which is used to select RDF nodes.</li>
-        <li class="followup leadup"><dfn>shapeExpressionLabel</dfn>: <a href="http://shex.io/shex-semantics-20170327/#dfn-shapeexprlabel">ShEx shapeExprLabel</a> or the string "<code>start shape</code>" for the <a href="http://rawgit.com/shexSpec/spec/separate-APIs/index.html#dfn-start-shape-expression">start shape expression</a>.</li>
+        <li class="followup leadup"><dfn>shapeExpressionLabel</dfn>: <a href="http://shex.io/shex-semantics-20170327/#dfn-shapeexprlabel">ShEx shapeExprLabel</a> or the string "<code>START</code>" for the <a href="http://rawgit.com/shexSpec/spec/separate-APIs/index.html#dfn-start-shape-expression">start shape expression</a>.</li>
         <li class="followup leadup"><dfn>status</dfn>: <em>[default="conformant"]</em> "nonconformant" | "conformant".</li>
         <li class="followup leadup"><dfn>reason</dfn>: <em>[optional]</em> a string stating a reason for failure or success.</li>
         <li class="followup       "><dfn>appInfo</dfn>: <em>[optional]</em> an application-specific JSON-LD structure</li>
@@ -247,7 +247,7 @@
       </aside>
 
       <p>
-        A query ShapeMap can include <a>shape associations</a> with both <a>RDF nodes</a> and <a>triple pattern</a>.
+        A query ShapeMap can include <a>shape associations</a> with both <a>RDF nodes</a> and <a>triple patterns</a>.
       </p>
       <div class="example">
         <pre class="nohighlight"><span class="comment"># Validate a simple node/shape pair.</span>
@@ -256,7 +256,7 @@
 "chat"@en-fr@&lt;http://...S3&gt;?,
 <span class="comment"># validate everything with type Some/Type as the START shape.</span>
 {<span class="keyword">FOCUS</span> &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt; &lt;http://schema.example/Some/Type&gt;}@START,
-<span class="comment"># Valide all objects of p3.</span>
+<span class="comment"># Validate all objects of p3.</span>
 {_ &lt;http://...p3&gt; <span class="keyword">FOCUS</span>}@START</pre>
       </div>
       <ul>
