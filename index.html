@@ -34,6 +34,9 @@
           url:        "http://www.w3.org/People/Eric/",
           company:    "W3C/MIT",
           companyURL: "http://www.w3.org/" },
+        { name:       "Thomas Baker",
+          company:    "Dublin Core Metadata Initiative",
+          companyURL: "http://dublincore.org/" },
       ],
       wg:           "Shape Expressions Community Group",
       wgURI:        "https://www.w3.org/community/shex/",
@@ -65,7 +68,7 @@
         A <span class="math">node constraint</span> describes an RDF node (<a>IRI</a>, <a>blank node</a> or <a>literal</a>) and a <span class="math">shape</span> describes the <a>triples</a> involving nodes in an <a>RDF graph</a>.
         The ShapeMap language associates RDF nodes with ShEx shapes.
         These associations can be used to state candidate shape maps as an input to the validation process.
-        They can be the output of a validation process, where the ShEx engine reports the conformance of RDF nodes with respect to ShEx Shapes.
+        They can be the output of a validation process, where the ShEx engine reports the conformance of RDF nodes with respect to ShEx shapes.
       </p>
       <p>
         This document defines the ShapeMap language.
@@ -88,15 +91,15 @@
         <!-- Please see the associated sections of the <a href="../spec/index.html">Shape Expressions Language</a>. -->
       </p>
       <ul>
-        <li><dfn data-cite="shex-semantics#dfn-shapeexpr" data-lt="shape expression|shex shape expression">ShapeExpression</dfn>: a boolean expression of ShEx shapes.</li>
+        <li><dfn data-cite="shex-semantics#dfn-shapeexpr" data-lt="shape expression|shex shape expression">ShapeExpression</dfn>: a Boolean expression of ShEx shapes.</li>
         <li><dfn data-lt="focus node|focus">focus node</dfn>: a node, potentially in an RDF graph, to be inspected for conformance with a shape expression.</li>
       </ul>
       <p>
         ShExMap uses the following terms from RDF semantics [[!rdf11-mt]]:
       </p>
       <ul>
-        <li><dfn data-cite="rdf11-concepts#dfn-node" data-lt="rdf node|rdf nodes">Node</dfn>: one of <dfn>IRI</dfn>, <dfn data-cite="rdf11-concepts#dfn-blank-node">blank node</dfn>, <dfn>Literal</dfn></li>
-        <li><dfn data-cite="rdf11-concepts#dfn-rdf-graph" data-lt="RDF Graph|RDF Graphs">Graph</dfn>: a set of <dfn data-cite="rdf11-concepts#dfn-rdf-triple" data-lt="triple|rdf triple|rdf triples">Triples</dfn> of (<dfn data-cite="rdf11-concepts#dfn-subject">subject</dfn>, <dfn data-cite="rdf11-concepts#dfn-predicate">predicate</dfn>, <dfn data-cite="rdf11-concepts#dfn-object">object</dfn>)</li>
+        <li><dfn data-cite="rdf11-concepts#dfn-node" data-lt="rdf node|rdf nodes">Node</dfn>: one of <dfn>IRI</dfn>, <dfn data-cite="rdf11-concepts#dfn-blank-node">blank node</dfn>, <dfn>Literal</dfn>.</li>
+        <li><dfn data-cite="rdf11-concepts#dfn-rdf-graph" data-lt="RDF Graph|RDF Graphs">Graph</dfn>: a set of <dfn data-cite="rdf11-concepts#dfn-rdf-triple" data-lt="triple|rdf triple|rdf triples">Triples</dfn> of (<dfn data-cite="rdf11-concepts#dfn-subject">subject</dfn>, <dfn data-cite="rdf11-concepts#dfn-predicate">predicate</dfn>, <dfn data-cite="rdf11-concepts#dfn-object">object</dfn>).</li>
       </ul>
     </section>
 
@@ -116,34 +119,37 @@
     <section id="shapemap-structure">
       <h2>ShapeMap structure</h2>
       <p class="leadup">
-        <dfn data-cite="shex-semantics#dfn-shapemap" data-lt="shapemap|shape-map">ShapeMap</dfn>: a set of <dfn data-lt="shape associations">shape association</dfn>s. Each shape association has a <a>node</a> and <a>shape</a> and , when used for the result of validation, may have a <a>status</a>, <a>reason</a> and/or <a>appInfo</a>:
+        <dfn data-cite="shex-semantics#dfn-shapemap" data-lt="shapemap|shape-map">ShapeMap</dfn>: a set of <dfn data-lt="shape associations">shape association</dfn>s. Each shape association has at least two members: a <a>nodeSelector</a> and a <a>shapeExpressionLabel</a>, and when used for the result of validation, may have any of <a>status</a>, <a>reason</a>, or <a>appInfo</a>:
       </p>
       <ul class="followup">
-        <li class="         leadup"><dfn>node</dfn>: an <a>RDF node</a> or a <a>triple pattern</a>.</li>
-        <li class="followup leadup"><dfn>shape</dfn>: a <a>ShEx shape expression</a>.</li>
+        <li class="         leadup"><dfn>nodeSelector</dfn>: an <a>RDF node</a>, or a <a>triple pattern</a> which is used to select RDF nodes.</li>
+        <li class="followup leadup"><dfn>shapeExpressionLabel</dfn>: <a href="http://shex.io/shex-semantics-20170327/#dfn-shapeexprlabel">ShEx shapeExprLabel</a> or the string "<code>START</code>" for the <a href="http://rawgit.com/shexSpec/spec/separate-APIs/index.html#dfn-start-shape-expression">start shape expression</a>.</li>
         <li class="followup leadup"><dfn>status</dfn>: <em>[default="conformant"]</em> "nonconformant" | "conformant".</li>
         <li class="followup leadup"><dfn>reason</dfn>: <em>[optional]</em> a string stating a reason for failure or success.</li>
         <li class="followup       "><dfn>appInfo</dfn>: <em>[optional]</em> an application-specific JSON-LD structure</li>
       </ul>
 
       <p>
-        If the <a>status</a> property is absent, the <a>status</a> is assumed to be "conformant".
-        The <a>reason</a> and <a>appInfo</a> properties may also be absent but have no default value. 
+        In this document, these members can be addressed with a '<code>.</code>' operator.  For instance, a shape association <code>A</code> would have a <code>A.nodeSelector</code> member.
       </p>
 
       <p>
-        A <dfn>triple pattern</dfn> has a subject, predicate and object.
+        If the <a>status</a> member is absent, the <a>status</a> is assumed to be "conformant".
+        The <a>reason</a> and <a>appInfo</a> members may also be absent but have no default value. 
+      </p>
+
+      <p>
+        A <dfn>triple pattern</dfn> has a subject pattern, predicate IRI and object pattern.
       </p>
       <ul>
-        <li>The subject may be an IRI, a <a>focus selector</a> or a <a>wildcard</a>.</li>
-        <li>The predicate in an IRI.</li>
-        <li>The object may be an IRI, literal, <a>focus selector</a> or a <a>wildcard</a>.</li>
+        <li>The subject pattern may be an IRI, a <a>focus selector</a> or a <a>wildcard</a>.</li>
+        <li>The object pattern may be an IRI, literal, <a>focus selector</a> or a <a>wildcard</a>.</li>
       </ul>
       <p>
         A <dfn>focus selector</dfn> identifies the slot (subject or object) to be validated.
-        A <dfn>wildcard</dfn> indicates that that slot may hold any value.
-        A triple pattern has exactly one focus selectr
-        A triple pattern maps to a <dfn data-cite="sparql11-query#sparqlTriplePatterns">SPARQL triple pattern</dfn> with these restrictions:
+        A <dfn>wildcard</dfn> indicates that the slot may hold any value.
+        A triple pattern has exactly one focus selector.
+        A triple pattern maps to a <dfn data-cite="sparql11-query#sparqlTriplePatterns">SPARQL triple pattern</dfn> with the following restrictions:
       </p>
       <ul>
         <li><code>V</code> (the set of variables) is either a fresh variable or a known token to identify the <a>focus node</a>.</li>
@@ -152,20 +158,20 @@
       </ul>
 
       <p>
-        A <dfn>query ShapeMap</dfn> is a ShapeMap with exactly a <a>node</a> and <a>shape</a> property.
+        A <dfn>query ShapeMap</dfn> is a ShapeMap in which each shape association has only the members <a>nodeSelector</a> and <a>shapeExpressionLabel</a>.
       </p>
 
       <p>
-        A <dfn>fixed ShapeMap</dfn> is a ShapeMap with no <a>status</a>, <a>reason</a> or <a>appInfo</a> properties and every <a>node</a> property is an RDF Node.
+        A <dfn>fixed ShapeMap</dfn> is a query ShapeMap in which each nodeSelector is an RDF node.  
         The ShEx validation process takes as input a fixed ShapeMap.
       </p>
       
       <p>
-        A <dfn>result ShapeMap</dfn> is a ShapeMap with an optional <a>status</a>, <a>reason</a> and <a>appInfo</a> property.
+        A <dfn>result ShapeMap</dfn> is a fixed ShapeMap with the addition of optional members <a>status</a>, <a>reason</a> and <a>appInfo</a>.
       </p>
       
       <p>
-        The combination of node and shape in a ShapeMap is unique.
+        No two <a>shape associations</a> in a ShapeMap may have the same combination of nodeSelector and shapeExpressionLabel.
       </p>
 
       <aside class="example" title="Invalid ShapeMaps - duplicate node/shape pairs">
@@ -207,17 +213,17 @@
       </ul>
 
       <p>
-        A query ShapeMap is converted to fixed ShapeMap to be used as the input to the validation process.
-        This process takes as input a query ShapeMap and a graph and produces fixed ShapeMap.
-        For a query ShapeMap <code>q</code>, a graph <code>g</code>, for each <a>shape association</a> <code>a</code> in <code>q</code>:
+        A query ShapeMap is converted to a fixed ShapeMap to be used as the input to the validation process.
+        This process takes as input a query ShapeMap and a graph and produces a fixed ShapeMap.
+        For a query ShapeMap <code>Q</code>, a graph <code>G</code>, for each <a>shape association</a> <code>A</code> in <code>Q</code>:
       </p>
       <ul>
-        <li>If <code>a</code>.node is an RDF graph, <code>a</code> is in the fixed ShapeMap.</li>
-        <li>If <code>a</code>.node is <a>triple pattern</a>, let <code>p</code> be a <a href="https://www.w3.org/TR/sparql11-query/#defn_TriplePattern">SPARQL Triple Pattern</a> where
+        <li>If <code>A</code>.node is an RDF graph, <code>A</code> is in the fixed ShapeMap.</li>
+        <li>If <code>A</code>.node is a <a>triple pattern</a>, let <code>P</code> be a <a href="https://www.w3.org/TR/sparql11-query/#defn_TriplePattern">SPARQL Triple Pattern</a> where
         <ul>
-          <li>If <code>a</code>'s subject is a <a>focus selector</a> or a <a>wildcard</a>, <code>p</code>'s  subject is a fresh variable, otherwise <code>p</code>'s subect is <code>a</code>'s subject.</li>
-          <li><code>p</code>'s predicate is <code>a</code>'s predicate.</li>
-          <li>If <code>a</code>'s object is a <a>focus selector</a> or a <a>wildcard</a>, <code>p</code>'s  object is a fresh variable, otherwise <code>p</code>'s subect is <code>a</code>'s object.</li>
+          <li>If <code>A</code>'s subject is a <a>focus selector</a> or a <a>wildcard</a>, <code>P</code>'s  subject is a fresh variable, otherwise <code>P</code>'s subect is <code>A</code>'s subject.</li>
+          <li><code>P</code>'s predicate is <code>A</code>'s predicate.</li>
+          <li>If <code>A</code>'s object is a <a>focus selector</a> or a <a>wildcard</a>, <code>P</code>'s  object is a fresh variable, otherwise <code>P</code>'s subect is <code>A</code>'s object.</li>
         </ul>
         </li>
       </ul>
@@ -241,7 +247,7 @@
       </aside>
 
       <p>
-        A query ShapeMap can include <a>shape associations</a> with both <a>RDF nodes</a> and <a>triple pattern</a>.
+        A query ShapeMap can include <a>shape associations</a> with both <a>RDF nodes</a> and <a>triple patterns</a>.
       </p>
       <div class="example">
         <pre class="nohighlight"><span class="comment"># Validate a simple node/shape pair.</span>
@@ -250,7 +256,7 @@
 "chat"@en-fr@&lt;http://...S3&gt;?,
 <span class="comment"># validate everything with type Some/Type as the START shape.</span>
 {<span class="keyword">FOCUS</span> &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt; &lt;http://schema.example/Some/Type&gt;}@START,
-<span class="comment"># Valide all objects of p3.</span>
+<span class="comment"># Validate all objects of p3.</span>
 {_ &lt;http://...p3&gt; <span class="keyword">FOCUS</span>}@START</pre>
       </div>
       <ul>
