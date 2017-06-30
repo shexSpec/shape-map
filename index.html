@@ -116,7 +116,7 @@
     <section id="shapemap-structure">
       <h2>ShapeMap structure</h2>
       <p class="leadup">
-        <dfn data-cite="shex-semantics#dfn-shapemap" data-lt="shapemap|shape-map">ShapeMap</dfn>: a set of <dfn data-lt="shape associations">shape association</dfn>s. Each shape association has at least two members: a <a>node selector</a> and a shape expression label, and when used for the result of validation, may have any of <a>status</a>, <a>reason</a>, or <a>appInfo</a>:
+        <dfn data-cite="shex-semantics#dfn-shapemap" data-lt="shapemap|shape-map">ShapeMap</dfn>: a set of <dfn data-lt="shape associations">shape association</dfn>s. Each shape association has at least two members: a <a>node selector</a> and a <a>shape expression label</a>, and when used for the result of validation, may have any of <a>status</a>, <a>reason</a>, or <a>appInfo</a>:
       </p>
       <ul class="followup">
         <li class="         leadup"><dfn>node selector</dfn>: an <a>RDF node</a>, or a <a>triple pattern</a> which is used to select RDF nodes.</li>
@@ -128,7 +128,7 @@
 
       <p>
         If the <a>status</a> member is absent, the <a>status</a> is assumed to be "conformant".
-        The <a>reason</a> and <a>appInfo</a> properties may also be absent but have no default value. 
+        The <a>reason</a> and <a>appInfo</a> members may also be absent but have no default value. 
       </p>
 
       <p>
@@ -164,7 +164,7 @@
       </p>
       
       <p>
-        No two associations in a ShapeMap may have the same combination of node selector and shape expression label.
+        No two <a>shape associations</a> in a ShapeMap may have the same combination of node selector and shape expression label.
       </p>
 
       <aside class="example" title="Invalid ShapeMaps - duplicate node/shape pairs">
