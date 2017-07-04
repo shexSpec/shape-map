@@ -204,18 +204,18 @@
     <section id="usage">
       <h2>ShapeMap usage</h2>
       <p>
-        ShapeMaps are designed to express the <a>goal</a> and <a>result</a> of validating an RDF node against a ShEx schema.
+        ShapeMaps are designed to express the <a>goal</a> or the <a>result</a> of validating an RDF node against a ShEx schema:
       </p>
 
       <ul>
-        <li><dfn>goal</dfn> - a <a>query ShapeMap</a> or <a>fixed ShapeMap</a> expressing the question posed, e.g. "does node1 conform to shape2?"</li>
-        <li><dfn>result</dfn> - a <a>result ShapeMap</a> expressing the outcome of a conformance check, e.g. "node1 conforms to shape2."</li>
+        <li>if expressing the <dfn>goal</dfn>, the <a>query ShapeMap</a> or <a>fixed ShapeMap</a> expresses the question posed, e.g., "does node1 conform to shape2?"</li>
+        <li>if expressing the <dfn>result</dfn>, the <a>result ShapeMap</a> expresses the outcome of a conformance check, e.g., "node1 conforms to shape2."</li>
       </ul>
 
       <p>
         A query ShapeMap is converted to a fixed ShapeMap to be used as the input to the validation process.
         This process takes as input a query ShapeMap and a graph and produces a fixed ShapeMap.
-        For a query ShapeMap <code>Q</code>, a graph <code>G</code>, for each <a>shape association</a> <code>A</code> in <code>Q</code>:
+        For a query ShapeMap <code>Q</code> and a graph <code>G</code>, for each <a>shape association</a> <code>A</code> in <code>Q</code>:
       </p>
       <ul>
         <li>If <code>A</code>.node is an <a>RDF node</a>, <code>A</code> is in the fixed ShapeMap.</li>
