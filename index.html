@@ -119,11 +119,11 @@
     <section id="shapemap-structure">
       <h2>ShapeMap structure</h2>
       <p class="leadup">
-        <dfn data-cite="shex-semantics#dfn-shapemap" data-lt="shapemap|shape-map">ShapeMap</dfn>: a set of <dfn data-lt="shape associations">shape association</dfn>s. Each shape association has at least two members: a <a>nodeSelector</a> and a <a>shapeExpressionLabel</a>, and when used for the result of validation, may have any of <a>status</a>, <a>reason</a>, or <a>appInfo</a>:
+        <dfn data-cite="shex-semantics#dfn-shapemap" data-lt="shapemap|shape-map">ShapeMap</dfn>: a set of <dfn data-lt="shape associations">shape association</dfn>s. Each shape association has at least two members: a <a>nodeSelector</a> and a <a>shapeLabel</a>, and when used for the result of validation, may have any of <a>status</a>, <a>reason</a>, or <a>appInfo</a>:
       </p>
       <ul class="followup">
         <li class="         leadup"><dfn>nodeSelector</dfn>: an <a>RDF node</a>, or a <a>triple pattern</a> which is used to select RDF nodes.</li>
-        <li class="followup leadup"><dfn>shapeExpressionLabel</dfn>: <a href="http://shex.io/shex-semantics-20170327/#dfn-shapeexprlabel">ShEx shapeExprLabel</a> or the string "<code>START</code>" for the <a href="http://rawgit.com/shexSpec/spec/separate-APIs/index.html#dfn-start-shape-expression">start shape expression</a>.</li>
+        <li class="followup leadup"><dfn>shapeLabel</dfn>: <a href="http://shex.io/shex-semantics-20170327/#dfn-shapeexprlabel">ShEx shapeExprLabel</a> or the string "<code>START</code>" for the <a href="http://rawgit.com/shexSpec/spec/separate-APIs/index.html#dfn-start-shape-expression">start shape expression</a>.</li>
         <li class="followup leadup"><dfn>status</dfn>: <em>[default="conformant"]</em> "nonconformant" or "conformant".</li>
         <li class="followup leadup"><dfn>reason</dfn>: <em>[optional]</em> a string stating a reason for failure or success.</li>
         <li class="followup       "><dfn>appInfo</dfn>: <em>[optional]</em> an application-specific JSON-LD structure</li>
@@ -158,7 +158,7 @@
       </ul>
 
       <p>
-        A <dfn>query ShapeMap</dfn> is a ShapeMap in which each shape association has only the members <a>nodeSelector</a> and <a>shapeExpressionLabel</a>.
+        A <dfn>query ShapeMap</dfn> is a ShapeMap in which each shape association has only the members <a>nodeSelector</a> and <a>shapeLabel</a>.
       </p>
 
       <p>
@@ -171,20 +171,20 @@
       </p>
       
       <p>
-        No two <a>shape associations</a> in a ShapeMap may have the same combination of nodeSelector and shapeExpressionLabel.
+        No two <a>shape associations</a> in a ShapeMap may have the same combination of nodeSelector and shapeLabel.
       </p>
 
-      <aside class="example" title="Invalid ShapeMaps - duplicate node/shape pairs">
+      <aside class="example" title="Invalid ShapeMaps - duplicate nodeSelector/shapeLabel pairs">
         <p>
-          This JSON ShapeMap would not be valid as it has two entries for a node/shape pair:
+          This JSON ShapeMap would not be valid as it has two entries for a nodeSelector/shapeLabel pair:
         </p>
         <pre class="error nohighlight">
 [
-  { "node": "&lt;http://data.example/node1&gt;,
-    "shape": "&lt;http://schema.example/Shape2&gt;,
+  { "nodeSelector": "&lt;http://data.example/node1&gt;,
+    "shapeLabel": "&lt;http://schema.example/Shape2&gt;,
     <span class="lookit">"status": "nonconformant"</span> },
-  { "node": "&lt;http://data.example/node1&gt;,
-    "shape": "&lt;http://schema.example/Shape2&gt; }
+  { "nodeSelector": "&lt;http://data.example/node1&gt;,
+    "shapeLabel": "&lt;http://schema.example/Shape2&gt; }
 ]</pre>
         <p>
           The above example has conflicting values for the <a>status</a>: the first asserts that <code>node1</code> does not conform to <code>Shape2</code>; the second has no status and so asserts the default which is that it does conform.
@@ -192,10 +192,10 @@
         </p>
         <pre class="error nohighlight">
 [
-  { "node": "&lt;http://data.example/node1&gt;,
-    "shape": "&lt;http://schema.example/Shape2&gt; },
-  { "node": "&lt;http://data.example/node1&gt;,
-    "shape": "&lt;http://schema.example/Shape2&gt; }
+  { "nodeSelector": "&lt;http://data.example/node1&gt;,
+    "shapeLabel": "&lt;http://schema.example/Shape2&gt; },
+  { "nodeSelector": "&lt;http://data.example/node1&gt;,
+    "shapeLabel": "&lt;http://schema.example/Shape2&gt; }
 ]</pre>
       </aside>
       
@@ -218,17 +218,17 @@
         For a query ShapeMap <code>Q</code> and a graph <code>G</code>, for each <a>shape association</a> <code>A</code> in <code>Q</code>:
       </p>
       <ul>
-        <li>If <code>A</code>.node is an <a>RDF node</a>, <code>A</code> is in the fixed ShapeMap.</li>
-        <li>If <code>A</code>.node is a <a>triple pattern</a>, let <code>P</code> be a <a href="https://www.w3.org/TR/sparql11-query/#defn_TriplePattern">SPARQL Triple Pattern</a> where
+        <li>If <code>A</code>.nodeSelector is an <a>RDF node</a>, <code>A</code> is in the fixed ShapeMap.</li>
+        <li>If <code>A</code>.nodeSelector is a <a>triple pattern</a>, let <code>P</code> be a <a href="https://www.w3.org/TR/sparql11-query/#defn_TriplePattern">SPARQL Triple Pattern</a> where
         <ul>
           <li>If <code>A</code>'s subject is a <a>focus selector</a> or a <a>wildcard</a>, <code>P</code>'s  subject is a fresh variable, otherwise <code>P</code>'s subject is <code>A</code>'s subject.</li>
           <li><code>P</code>'s predicate is <code>A</code>'s predicate.</li>
           <li>If <code>A</code>'s object is a <a>focus selector</a> or a <a>wildcard</a>, <code>P</code>'s  object is a fresh variable, otherwise <code>P</code>'s subject is <code>A</code>'s object.</li>
         </ul>
-        For each triple <code>T</code> in <code>G</code> which matches <code>P</code>, the fixed ShapeMap has a <a>shape association</a> <code>F</code> where <code>F</code>.shape = <code>A</code>.shape and
+        For each triple <code>T</code> in <code>G</code> which matches <code>P</code>, the fixed ShapeMap has a <a>shape association</a> <code>F</code> where <code>F</code>.shapeLabel = <code>A</code>.shapeLabel and
         <ul>
-          <li>If <code>A</code>'s subject is a <a>focus selector</a>, <code>F</code>.node is <code>T</code>'s subject.</li>
-          <li>If <code>A</code>'s object is a <a>focus selector</a>, <code>F</code>.node is <code>T</code>'s object.</li>
+          <li>If <code>A</code>'s subject is a <a>focus selector</a>, <code>F</code>.nodeSelector is <code>T</code>'s subject.</li>
+          <li>If <code>A</code>'s object is a <a>focus selector</a>, <code>F</code>.nodeSelector is <code>T</code>'s object.</li>
         </ul>
         </li>
       </ul>
@@ -243,7 +243,8 @@
         <p>
           A simple <a>fixed ShapeMap</a> might look like this:
         </p>
-        <pre class="nohighlight">&lt;http://data.example/#n1&gt; @ &lt;http://data.example/#S2&gt;, <span class="comment"># a simple node/shape pair</span>
+        <pre class="nohighlight"><span class="comment"># a simple nodeSelector/shapeLabel pair</span>
+&lt;http://data.example/#n1&gt; @ &lt;http://data.example/#S2&gt;,
 </pre>
         <p>
           and a <a>result ShapeMap</a> might look the same if there were no errors.
@@ -255,7 +256,7 @@
         A query ShapeMap can include <a>shape associations</a> with both <a>RDF nodes</a> and <a>triple patterns</a>.
       </p>
       <div class="example">
-        <pre class="nohighlight"><span class="comment"># Validate a simple node/shape pair.</span>
+        <pre class="nohighlight"><span class="comment"># Validate a simple nodeSelector/shapeLabel pair.</span>
 &lt;http://data.example/#n1&gt; @ &lt;http://data.example/#S2&gt;,
 <span class="comment"># Validate a literal as S3.</span>
 "chat"@en-fr@&lt;http://...S3&gt;,
@@ -265,8 +266,8 @@
 {_ &lt;http://...p3&gt; <span class="keyword">FOCUS</span>}@START</pre>
       </div>
       <ul>
-        <li>The <a>node</a> or <a>triple pattern</a> is before the '@'.</li>
-        <li>The <a>shape expression</a> label is immediately after the '@'.</li>
+        <li>The <a>nodeSelector</a> (an <a>RDF node</a> or <a>triple pattern</a>) is before the '@'.</li>
+        <li>The <a>shapeLabel</a> is immediately after the '@'.</li>
         <li>The '<code>FOCUS</code>' keyword is a <a>focus selector</a>.</li>
         <li>The '<code>_</code>' character is a <a>wildcard</a>.</li>
       </ul>
