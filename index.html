@@ -174,7 +174,7 @@
         No two <a>shape associations</a> in a ShapeMap may have the same combination of nodeSelector and shapeLabel.
       </p>
 
-      <aside class="example" title="Invalid ShapeMaps - duplicate nodeSelector/shapeLabel pairs">
+      <aside class="example" title="invalid ShapeMaps - duplicate nodeSelector/shapeLabel pairs">
         <p class="leadup">
           This JSON ShapeMap would not be valid as it has two entries for a nodeSelector/shapeLabel pair:
         </p>
@@ -239,7 +239,7 @@
       <p>
         ShapeMaps can be easily transmitted and understood with a specialized syntax.
       </p>
-      <aside class="example" title="Simple human-syntax ShapeMap">
+      <aside class="example" title="simple fixed ShapeMap">
         <p class="leadup">
           A simple <a>fixed ShapeMap</a> might look like this:
         </p>
@@ -254,7 +254,7 @@
       <p>
         A query ShapeMap can include <a>shape associations</a> with both <a>RDF nodes</a> and <a>triple patterns</a>.
       </p>
-      <aside class="example">
+      <aside class="example" title="query ShapeMap with four shape associations">
         <pre class="nohighlight leadup"><span class="comment"># Validate a simple nodeSelector/shapeLabel pair.</span>
 &lt;http://data.example/#n1&gt; @ &lt;http://data.example/#S2&gt;,
 <span class="comment"># Validate a literal as S3.</span>
