@@ -275,6 +275,15 @@
 
     <section id="grammar">
       <h2>ShapeMap grammar</h2>
+      <p>
+        Production numbers followed by a letter correspond to productions in other grammars:
+      </p>
+      <ul>
+        <li class="leadup followup"><span class="lookit">t</span>: <a href="http://www.w3.org/TR/turtle/#sec-grammar-grammar">RDF 1.1 Turtle</a></li>
+        <li class="leadup followup"><span class="lookit">s</span>: <a href="http://www.w3.org/TR/sparql11-query/#sparqlGrammar">SPARQL 1.1</a></li>
+        <li class="leadup followup"><span class="lookit">x</span>: <a href="http://shex.io/shex-semantics-20170327/#shexc">ShEx 2</a></li>
+      </ul>
+
       <div class="grammarTable">
 <table style="border: 0; border-top: thick solid white; ">
 
@@ -286,10 +295,10 @@
 <tr style="vertical-align: baseline"><td id="prod-objectTerm"      >[<span class="prodNo">5 </span>]   </td>   <td><code class="production prod">objectTerm</code></td>       <td>   ::=   </td><td><code class="content"><span class="prod"><a class="grammarRef" href="#prod-subjectTerm">subjectTerm</a></span> | <span class="prod"><a class="grammarRef" href="#prod-literal">literal</a></span></code></td></tr>
 <tr style="vertical-align: baseline"><td id="prod-triplePattern"   >[<span class="prodNo">6 </span>]   </td>   <td><code class="production prod">triplePattern</code></td>    <td>   ::=   </td><td><code class="content">  '{' "FOCUS" <span class="prod"><a class="grammarRef" href="#prod-iri">iri</a></span> (<span class="prod"><a class="grammarRef" href="#prod-objectTerm">objectTerm</a></span> | '_') '}'<br/>
                                                                                                                                                                                                                           | '{' (<span class="prod"><a class="grammarRef" href="#prod-subjectTerm">subjectTerm</a></span> | '_') <span class="prod"><a class="grammarRef" href="#prod-iri">iri</a></span> "FOCUS" '}'</code></td></tr>
-<tr style="vertical-align: baseline"><td id="prod-triplePatternLL" >[<span class="prodNo">6LL</span>]   </td>   <td><code class="production prod">triplePatternLL</code></td>  <td>   ::=   </td><td><code class="content">'{' (<br/>
+<!-- tr style="vertical-align: baseline"><td id="prod-triplePatternLL" >[<span class="prodNo">6LL</span>]   </td>   <td><code class="production prod">triplePatternLL</code></td>  <td>   ::=   </td><td><code class="content">'{' (<br/>
                                                                                                                                                                                                                               "FOCUS" <span class="prod"><a class="grammarRef" href="#prod-iri">iri</a></span> (<span class="prod"><a class="grammarRef" href="#prod-objectTerm">objectTerm</a></span> | '_')<br/>
                                                                                                                                                                                                                             | (<span class="prod"><a class="grammarRef" href="#prod-subjectTerm">subjectTerm</a></span> | '_') <span class="prod"><a class="grammarRef" href="#prod-iri">iri</a></span> "FOCUS"<br/>
-                                                                                                                                                                                                                           ) '}'</code></td></tr>
+                                                                                                                                                                                                                           ) '}'</code></td></tr -->
 <tr style="vertical-align: baseline"><td id="prod-shapeSelector"   >[<span class="prodNo">7 </span>]   </td>   <td><code class="production prod">shapeSelector</code></td>    <td>   ::=   </td><td><code class="content">'@' (<span class="prod"><a class="grammarRef" href="#prod-iri">iri</a></span> | "START") | <span class="prod"><a class="grammarRef" href="#term-AT_START">AT_START</a></span><!-- | <span class="prod"><a class="grammarRef" href="#term-ATPNAME_NS">ATPNAME_NS</a></span> | <span class="prod"><a class="grammarRef" href="#term-ATPNAME_LN">ATPNAME_LN</a></span> --></code></td></tr>
 <!--
 <tr style="vertical-align: baseline"><td id="prod-status"          >[<span class="prodNo">8 </span>]   </td>   <td><code class="production prod">status</code></td>           <td>   ::=   </td><td><code class="content">'!' | '?'</code></td></tr>
@@ -322,7 +331,7 @@
 
 <tbody class="prod">
 <tr style="vertical-align: baseline">
-<td id="prod-rdfLiteral">[<span class="prodNo">65</span>]   </td>
+<td id="prod-rdfLiteral">[<span class="prodNo">65x</span>]   </td>
 <td><code class="production prod">rdfLiteral</code></td>
 <td>   ::=   </td>
 <td><code class="content"><span class="prod"><a class="grammarRef" href="#prod-langString">langString</a></span> | <span class="prod"><a class="grammarRef" href="#prod-string">string</a></span> ("^^" <span class="prod"><a class="grammarRef" href="#prod-iri">iri</a></span>)?</code></td>
@@ -350,7 +359,7 @@
 
 <tbody class="prod">
 <tr style="vertical-align: baseline">
-<td id="prod-langString">[<span class="prodNo">66</span>]   </td>
+<td id="prod-langString">[<span class="prodNo">66x</span>]   </td>
 <td><code class="production prod">langString</code></td>
 <td>   ::=   </td>
 <td>   <code class="content"><span class="prod"><a class="grammarRef" href="#term-LANG_STRING_LITERAL1">LANG_STRING_LITERAL1</a></span> | <span class="prod"><a class="grammarRef" href="#term-LANG_STRING_LITERAL_LONG1">LANG_STRING_LITERAL_LONG1</a></span><br/>
@@ -379,6 +388,10 @@
 <tbody class="grammarParagraph">
   <tr><td colspan="4">
     <h3 id="terminals">Terminals</h3>
+    <p>
+      Text is matched against the longest matching terminal.
+      The <a href="#term-PASSED_TOKENS">PASSED TOKENS</a> below may appear between any terminals or literal strings which appear in the grammar above.
+    </p>
   </td></tr>
 </tbody>
 
@@ -541,7 +554,7 @@
 
 <tbody class="term">
 <tr style="vertical-align: baseline">
-<td id="term-LANG_STRING_LITERAL1">[<span class="prodNo">73</span>]   </td>
+<td id="term-LANG_STRING_LITERAL1">[<span class="prodNo">73x</span>]   </td>
 <td>&lt;<code class="production term">LANG_STRING_LITERAL1</code>&gt;</td>
 <td>   ::=   </td>
 <td><code class="content">"'" ([^'\\\n\r] | <span class="prod"><a class="grammarRef" href="#term-ECHAR">ECHAR</a></span> | <span class="prod"><a class="grammarRef" href="#term-UCHAR">UCHAR</a></span>)* "'" <span class="prod"><a class="grammarRef" href="#term-LANGTAG">LANGTAG</a></span></code></td>
@@ -550,7 +563,7 @@
 
 <tbody class="term">
 <tr style="vertical-align: baseline">
-<td id="term-LANG_STRING_LITERAL2">[<span class="prodNo">74</span>]   </td>
+<td id="term-LANG_STRING_LITERAL2">[<span class="prodNo">74x</span>]   </td>
 <td>&lt;<code class="production term">LANG_STRING_LITERAL2</code>&gt;</td>
 <td>   ::=   </td>
 <td><code class="content">'"' ([^\"\\\n\r] | <span class="prod"><a class="grammarRef" href="#term-ECHAR">ECHAR</a></span> | <span class="prod"><a class="grammarRef" href="#term-UCHAR">UCHAR</a></span>)* '"' <span class="prod"><a class="grammarRef" href="#term-LANGTAG">LANGTAG</a></span></code></td>
@@ -559,7 +572,7 @@
 
 <tbody class="term">
 <tr style="vertical-align: baseline">
-<td id="term-LANG_STRING_LITERAL_LONG1">[<span class="prodNo">75</span>]   </td>
+<td id="term-LANG_STRING_LITERAL_LONG1">[<span class="prodNo">75x</span>]   </td>
 <td>&lt;<code class="production term">LANG_STRING_LITERAL_LONG1</code>&gt;</td>
 <td>   ::=   </td>
 <td><code class="content">"'''" ( ("'" | "''")? ([^\\'\\] | <span class="prod"><a class="grammarRef" href="#term-ECHAR">ECHAR</a></span> | <span class="prod"><a class="grammarRef" href="#term-UCHAR">UCHAR</a></span>) )* "'''" <span class="prod"><a class="grammarRef" href="#term-LANGTAG">LANGTAG</a></span></code></td>
@@ -568,7 +581,7 @@
 
 <tbody class="term">
 <tr style="vertical-align: baseline">
-<td id="term-LANG_STRING_LITERAL_LONG2">[<span class="prodNo">76</span>]   </td>
+<td id="term-LANG_STRING_LITERAL_LONG2">[<span class="prodNo">76x</span>]   </td>
 <td>&lt;<code class="production term">LANG_STRING_LITERAL_LONG2</code>&gt;</td>
 <td>   ::=   </td>
 <td><code class="content">'"""' ( ('"' | '""')? ([^\"\\] | <span class="prod"><a class="grammarRef" href="#term-ECHAR">ECHAR</a></span> | <span class="prod"><a class="grammarRef" href="#term-UCHAR">UCHAR</a></span>) )* '"""' <span class="prod"><a class="grammarRef" href="#term-LANGTAG">LANGTAG</a></span></code></td>
@@ -683,7 +696,7 @@
 
 <tbody class="term">
 <tr style="vertical-align: baseline">
-<td id="term-PASSED_TOKENS">[<span class="prodNo">98</span>]   </td>
+<td id="term-PASSED_TOKENS">   </td>
 <td><code class="production directive">PASSED TOKENS</code></td>
 <td>   ::=   </td>
 <td>   <code class="content">[ \t\r\n]+<br/>
