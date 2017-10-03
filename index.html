@@ -24,8 +24,10 @@
         }
       },
       specStatus:     "CG-DRAFT",
-      shortName:      "shapemap",
-      edDraftURI:     "https://shexspec.github.io/ShapeMap/",
+      shortName:      "shape-map",
+      latestVersion:  "http://shex.io/shape-map/",
+      thisVersion:    "http://shex.io/shape-map-20170713",
+      edDraftURI:     "https://shexspec.github.io/shape-map/",
       testSuiteURI:   "https://github.com/shexSpec/shexTest",
       issueBase:      "https://github.com/shexSpec/shex/issues",
       githubAPI:      "https://api.github.com/repos/shexSpec/shex",
@@ -98,7 +100,7 @@
         ShExMap uses the following terms from RDF semantics [[!rdf11-mt]]:
       </p>
       <ul>
-        <li><dfn data-cite="rdf11-concepts#dfn-node" data-lt="rdf node|rdf nodes">Node</dfn>: one of <dfn>IRI</dfn>, <dfn data-cite="rdf11-concepts#dfn-blank-node">blank node</dfn>, <dfn>Literal</dfn>.</li>
+        <li><dfn data-cite="rdf11-concepts#dfn-node" data-lt="rdf nodes">RDF node</dfn>: one of <dfn data-cite="rdf11-concepts#dfn-iri">IRI</dfn>, <dfn data-cite="rdf11-concepts#dfn-blank-node">blank node</dfn>, <dfn data-cite="rdf11-concepts#dfn-literal">Literal</dfn>.</li>
         <li><dfn data-cite="rdf11-concepts#dfn-rdf-graph" data-lt="RDF Graph|RDF Graphs">Graph</dfn>: a set of <dfn data-cite="rdf11-concepts#dfn-rdf-triple" data-lt="triple|rdf triple|rdf triples">Triples</dfn> of (<dfn data-cite="rdf11-concepts#dfn-subject">subject</dfn>, <dfn data-cite="rdf11-concepts#dfn-predicate">predicate</dfn>, <dfn data-cite="rdf11-concepts#dfn-object">object</dfn>).</li>
       </ul>
     </section>
@@ -119,18 +121,18 @@
     <section id="shapemap-structure">
       <h2>ShapeMap structure</h2>
       <p class="leadup">
-        <dfn data-cite="shex-semantics#dfn-shapemap" data-lt="shapemap|shape-map">ShapeMap</dfn>: a set of <dfn data-lt="shape associations">shape association</dfn>s. Each shape association has at least two members: a <a>nodeSelector</a> and a <a>shapeLabel</a>, and when used for the result of validation, may have any of <a>status</a>, <a>reason</a>, or <a>appInfo</a>:
+        <dfn data-cite="shex-semantics#dfn-shapemap" data-lt="shapemap|shape-map">ShapeMap</dfn>: a set of <dfn data-lt="shape associations">shape association</dfn>s. Each shape association has at least two members: a <a>node</a> and a <a>shape</a>, and when used for the result of validation, may have any of <a>status</a>, <a>reason</a>, or <a>appInfo</a>:
       </p>
       <ul class="followup">
-        <li class="         leadup"><dfn>nodeSelector</dfn>: an <a>RDF node</a>, or a <a>triple pattern</a> which is used to select RDF nodes.</li>
-        <li class="followup leadup"><dfn>shapeLabel</dfn>: <a href="http://shex.io/shex-semantics-20170327/#dfn-shapeexprlabel">ShEx shapeExprLabel</a> or the string "<code>START</code>" for the <a href="http://rawgit.com/shexSpec/spec/separate-APIs/index.html#dfn-start-shape-expression">start shape expression</a>.</li>
+        <li class="         leadup"><dfn>node</dfn>: an <a>RDF node</a>, or a <a>triple pattern</a> which is used to select RDF nodes.</li>
+        <li class="followup leadup"><dfn>shape</dfn>: <a href="http://shex.io/shex-semantics-20170327/#dfn-shapeexprlabel">ShEx shapeExprLabel</a> or the string "<code>START</code>" for the <a href="http://rawgit.com/shexSpec/spec/separate-APIs/index.html#dfn-start-shape-expression">start shape expression</a>.</li>
         <li class="followup leadup"><dfn>status</dfn>: <em>[default="conformant"]</em> "nonconformant" or "conformant".</li>
         <li class="followup leadup"><dfn>reason</dfn>: <em>[optional]</em> a string stating a reason for failure or success.</li>
         <li class="followup       "><dfn>appInfo</dfn>: <em>[optional]</em> an application-specific JSON-LD structure</li>
       </ul>
 
       <p>
-        In this document, these members can be addressed with a '<code>.</code>' operator.  For instance, a shape association <code>A</code> would have an <code>A.nodeSelector</code> member.
+        In this document, these members can be addressed with a '<code>.</code>' operator.  For instance, a shape association <code>A</code> would have an <code>A.node</code> member.
       </p>
 
       <p>
@@ -158,11 +160,12 @@
       </ul>
 
       <p>
-        A <dfn>query ShapeMap</dfn> is a ShapeMap in which each shape association has only the members <a>nodeSelector</a> and <a>shapeLabel</a>.
+        A <dfn>query ShapeMap</dfn> is a ShapeMap in which each shape association has only the members <a>node</a> and <a>shape</a>.
+        The <a>node</a> property may directly identify an <a>RDF node</a> or it may select a set of RDF nodes.
       </p>
 
       <p>
-        A <dfn>fixed ShapeMap</dfn> is a query ShapeMap in which each nodeSelector is an RDF node.  
+        A <dfn>fixed ShapeMap</dfn> is a query ShapeMap in which each <a>node</a> is an RDF node.  
         The ShEx validation process takes as input a fixed ShapeMap.
       </p>
       
@@ -171,20 +174,20 @@
       </p>
       
       <p>
-        No two <a>shape associations</a> in a ShapeMap may have the same combination of nodeSelector and shapeLabel.
+        No two <a>shape associations</a> in a ShapeMap may have the same combination of node and shape.
       </p>
 
-      <aside class="example" title="invalid ShapeMaps - duplicate nodeSelector/shapeLabel pairs">
+      <aside class="example" title="invalid ShapeMaps - duplicate node/shape pairs">
         <p class="leadup">
-          This JSON ShapeMap would not be valid as it has two entries for a nodeSelector/shapeLabel pair:
+          This JSON ShapeMap would not be valid as it has two entries for a node/shape pair:
         </p>
         <pre class="error nohighlight">
 [
-  { "nodeSelector": "&lt;http://data.example/node1&gt;,
-    "shapeLabel": "&lt;http://schema.example/Shape2&gt;,
+  { "node": "&lt;http://data.example/node1&gt;,
+    "shape": "&lt;http://schema.example/Shape2&gt;,
     <span class="lookit">"status": "nonconformant"</span> },
-  { "nodeSelector": "&lt;http://data.example/node1&gt;,
-    "shapeLabel": "&lt;http://schema.example/Shape2&gt; }
+  { "node": "&lt;http://data.example/node1&gt;,
+    "shape": "&lt;http://schema.example/Shape2&gt; }
 ]</pre>
         <p class="leadup followup">
           The above example has conflicting values for the <a>status</a>: the first asserts that <code>node1</code> does not conform to <code>Shape2</code>; the second has no status and so asserts the default which is that it does conform.
@@ -192,10 +195,10 @@
         </p>
         <pre class="error nohighlight leadup">
 [
-  { "nodeSelector": "&lt;http://data.example/node1&gt;,
-    "shapeLabel": "&lt;http://schema.example/Shape2&gt; },
-  { "nodeSelector": "&lt;http://data.example/node1&gt;,
-    "shapeLabel": "&lt;http://schema.example/Shape2&gt; }
+  { "node": "&lt;http://data.example/node1&gt;,
+    "shape": "&lt;http://schema.example/Shape2&gt; },
+  { "node": "&lt;http://data.example/node1&gt;,
+    "shape": "&lt;http://schema.example/Shape2&gt; }
 ]</pre>
       </aside>
       
@@ -218,17 +221,17 @@
         For a query ShapeMap <code>Q</code> and a graph <code>G</code>, for each <a>shape association</a> <code>A</code> in <code>Q</code>:
       </p>
       <ul>
-        <li>If <code>A</code>.nodeSelector is an <a>RDF node</a>, <code>A</code> is in the fixed ShapeMap.</li>
-        <li>If <code>A</code>.nodeSelector is a <a>triple pattern</a>, let <code>P</code> be a <a href="https://www.w3.org/TR/sparql11-query/#defn_TriplePattern">SPARQL Triple Pattern</a> where
+        <li>If <code>A</code>.node is an <a>RDF node</a>, <code>A</code> is in the fixed ShapeMap.</li>
+        <li>If <code>A</code>.node is a <a>triple pattern</a>, let <code>P</code> be a <a href="https://www.w3.org/TR/sparql11-query/#defn_TriplePattern">SPARQL Triple Pattern</a> where
         <ul>
           <li>If <code>A</code>'s subject is a <a>focus selector</a> or a <a>wildcard</a>, <code>P</code>'s  subject is a fresh variable, otherwise <code>P</code>'s subject is <code>A</code>'s subject.</li>
           <li><code>P</code>'s predicate is <code>A</code>'s predicate.</li>
           <li>If <code>A</code>'s object is a <a>focus selector</a> or a <a>wildcard</a>, <code>P</code>'s  object is a fresh variable, otherwise <code>P</code>'s subject is <code>A</code>'s object.</li>
         </ul>
-        For each triple <code>T</code> in <code>G</code> which matches <code>P</code>, the fixed ShapeMap has a <a>shape association</a> <code>F</code> where <code>F</code>.shapeLabel = <code>A</code>.shapeLabel and
+        For each triple <code>T</code> in <code>G</code> which matches <code>P</code>, the fixed ShapeMap has a <a>shape association</a> <code>F</code> where <code>F</code>.shape = <code>A</code>.shape and
         <ul>
-          <li>If <code>A</code>'s subject is a <a>focus selector</a>, <code>F</code>.nodeSelector is <code>T</code>'s subject.</li>
-          <li>If <code>A</code>'s object is a <a>focus selector</a>, <code>F</code>.nodeSelector is <code>T</code>'s object.</li>
+          <li>If <code>A</code>'s subject is a <a>focus selector</a>, <code>F</code>.node is <code>T</code>'s subject.</li>
+          <li>If <code>A</code>'s object is a <a>focus selector</a>, <code>F</code>.node is <code>T</code>'s object.</li>
         </ul>
         </li>
       </ul>
@@ -243,7 +246,7 @@
         <p class="leadup">
           A simple <a>fixed ShapeMap</a> might look like this:
         </p>
-        <pre class="nohighlight"><span class="comment"># a simple nodeSelector/shapeLabel pair</span>
+        <pre class="nohighlight"><span class="comment"># a simple node/shape pair</span>
 &lt;http://data.example/#n1&gt; @ &lt;http://data.example/#S2&gt;,</pre>
         <p class="leadup followup">
           and a <a>result ShapeMap</a> might look the same if there were no errors.
@@ -255,7 +258,7 @@
         A query ShapeMap can include <a>shape associations</a> with both <a>RDF nodes</a> and <a>triple patterns</a>.
       </p>
       <aside class="example" title="query ShapeMap with four shape associations">
-        <pre class="nohighlight leadup"><span class="comment"># Validate a simple nodeSelector/shapeLabel pair.</span>
+        <pre class="nohighlight leadup"><span class="comment"># Validate a simple node/shape pair.</span>
 &lt;http://data.example/#n1&gt; @ &lt;http://data.example/#S2&gt;,
 <span class="comment"># Validate a literal as S3.</span>
 "chat"@en-fr@&lt;http://...S3&gt;,
@@ -265,8 +268,8 @@
 {<span class="keyword">_</span> &lt;http://...p3&gt; <span class="keyword">FOCUS</span>}@<span class="keyword">START</span></pre>
       </aside>
       <ul>
-        <li>The <a>nodeSelector</a> (an <a>RDF node</a> or <a>triple pattern</a>) is before the '@'.</li>
-        <li>The <a>shapeLabel</a> is immediately after the '@'.</li>
+        <li>The <a>node</a> (an <a>RDF node</a> or <a>triple pattern</a>) is before the '@'.</li>
+        <li>The <a>shape</a> is immediately after the '@'.</li>
         <li>The '<span class="keyword">FOCUS</span>' keyword is a <a>focus selector</a>.</li>
         <li>The '<span class="keyword">_</span>' character is a <a>wildcard</a>.</li>
         <li>The keyword "<span class="keyword">a</span>" is a shortcut for the <code>rdf:type</code> (<code>&lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt;</code>) property.</li>
@@ -289,8 +292,8 @@
 
 <tbody class="prod">
 <tr style="vertical-align: baseline"><td id="prod-shapeMap"        >[<span class="prodNo">1 </span>]   </td>   <td><code class="production prod">shapeMap</code></td>         <td>   ::=   </td><td><code class="content"><span class="prod"><a class="grammarRef" href="#prod-shapeAssociation">shapeAssociation</a></span> (',' <span class="prod"><a class="grammarRef" href="#prod-shapeAssociation">shapeAssociation</a></span>)*</code></td></tr>
-<tr style="vertical-align: baseline"><td id="prod-shapeAssociation">[<span class="prodNo">2 </span>]   </td>   <td><code class="production prod">shapeAssociation</code></td> <td>   ::=   </td><td><code class="content"><span class="prod"><a class="grammarRef" href="#prod-nodeSelector">nodeSelector</a></span> <span class="prod"><a class="grammarRef" href="#prod-shapeLabel">shapeLabel</a></span><!-- <span class="prod"><a class="grammarRef" href="#prod-status">status</a></span>? <span class="prod"><a class="grammarRef" href="#prod-reason">reason</a></span>? <span class="prod"><a class="grammarRef" href="#prod-jsonAttributes">jsonAttributes</a></span>? --></code></td></tr>
-<tr style="vertical-align: baseline"><td id="prod-nodeSelector"    >[<span class="prodNo">3 </span>]   </td>   <td><code class="production prod">nodeSelector</code></td>     <td>   ::=   </td><td><code class="content"><span class="prod"><a class="grammarRef" href="#prod-objectTerm">objectTerm</a></span> | <span class="prod"><a class="grammarRef" href="#prod-triplePattern">triplePattern</a></span></code></td></tr>
+<tr style="vertical-align: baseline"><td id="prod-shapeAssociation">[<span class="prodNo">2 </span>]   </td>   <td><code class="production prod">shapeAssociation</code></td> <td>   ::=   </td><td><code class="content"><span class="prod"><a class="grammarRef" href="#prod-nodeSpec">nodeSpec</a></span> <span class="prod"><a class="grammarRef" href="#prod-shapeSpec">shapeSpec</a></span><!-- <span class="prod"><a class="grammarRef" href="#prod-status">status</a></span>? <span class="prod"><a class="grammarRef" href="#prod-reason">reason</a></span>? <span class="prod"><a class="grammarRef" href="#prod-jsonAttributes">jsonAttributes</a></span>? --></code></td></tr>
+<tr style="vertical-align: baseline"><td id="prod-nodeSpec"    >[<span class="prodNo">3 </span>]   </td>   <td><code class="production prod">nodeSpec</code></td>     <td>   ::=   </td><td><code class="content"><span class="prod"><a class="grammarRef" href="#prod-objectTerm">objectTerm</a></span> | <span class="prod"><a class="grammarRef" href="#prod-triplePattern">triplePattern</a></span></code></td></tr>
 <tr style="vertical-align: baseline"><td id="prod-subjectTerm"     >[<span class="prodNo">4 </span>]   </td>   <td><code class="production prod">subjectTerm</code></td>      <td>   ::=   </td><td><code class="content"><span class="prod"><a class="grammarRef" href="#prod-iri">iri</a></span> | 'a'<!-- | <span class="prod"><a class="grammarRef" href="#term-BLANK_NODE_LABEL">BLANK_NODE_LABEL</a></span> --></code></td></tr>
 <tr style="vertical-align: baseline"><td id="prod-objectTerm"      >[<span class="prodNo">5 </span>]   </td>   <td><code class="production prod">objectTerm</code></td>       <td>   ::=   </td><td><code class="content"><span class="prod"><a class="grammarRef" href="#prod-subjectTerm">subjectTerm</a></span> | <span class="prod"><a class="grammarRef" href="#prod-literal">literal</a></span></code></td></tr>
 <tr style="vertical-align: baseline"><td id="prod-triplePattern"   >[<span class="prodNo">6 </span>]   </td>   <td><code class="production prod">triplePattern</code></td>    <td>   ::=   </td><td><code class="content">  '{' "FOCUS" <span class="prod"><a class="grammarRef" href="#prod-iri">iri</a></span> (<span class="prod"><a class="grammarRef" href="#prod-objectTerm">objectTerm</a></span> | '_') '}'<br/>
@@ -299,7 +302,7 @@
                                                                                                                                                                                                                               "FOCUS" <span class="prod"><a class="grammarRef" href="#prod-iri">iri</a></span> (<span class="prod"><a class="grammarRef" href="#prod-objectTerm">objectTerm</a></span> | '_')<br/>
                                                                                                                                                                                                                             | (<span class="prod"><a class="grammarRef" href="#prod-subjectTerm">subjectTerm</a></span> | '_') <span class="prod"><a class="grammarRef" href="#prod-iri">iri</a></span> "FOCUS"<br/>
                                                                                                                                                                                                                            ) '}'</code></td></tr -->
-<tr style="vertical-align: baseline"><td id="prod-shapeLabel"      >[<span class="prodNo">7 </span>]   </td>   <td><code class="production prod">shapeLabel</code></td>    <td>   ::=   </td><td><code class="content">'@' (<span class="prod"><a class="grammarRef" href="#prod-iri">iri</a></span> | "START") | <span class="prod"><a class="grammarRef" href="#term-AT_START">AT_START</a></span><!-- | <span class="prod"><a class="grammarRef" href="#term-ATPNAME_NS">ATPNAME_NS</a></span> | <span class="prod"><a class="grammarRef" href="#term-ATPNAME_LN">ATPNAME_LN</a></span> --></code></td></tr>
+<tr style="vertical-align: baseline"><td id="prod-shapeSpec"      >[<span class="prodNo">7 </span>]   </td>   <td><code class="production prod">shapeSpec</code></td>    <td>   ::=   </td><td><code class="content">'@' (<span class="prod"><a class="grammarRef" href="#prod-iri">iri</a></span> | "START") | <span class="prod"><a class="grammarRef" href="#term-AT_START">AT_START</a></span><!-- | <span class="prod"><a class="grammarRef" href="#term-ATPNAME_NS">ATPNAME_NS</a></span> | <span class="prod"><a class="grammarRef" href="#term-ATPNAME_LN">ATPNAME_LN</a></span> --></code></td></tr>
 <!--
 <tr style="vertical-align: baseline"><td id="prod-status"          >[<span class="prodNo">8 </span>]   </td>   <td><code class="production prod">status</code></td>           <td>   ::=   </td><td><code class="content">'!' | '?'</code></td></tr>
 <tr style="vertical-align: baseline"><td id="prod-reason"          >[<span class="prodNo">9 </span>]   </td>   <td><code class="production prod">reason</code></td>           <td>   ::=   </td><td><code class="content">'/' <span class="prod"><a class="grammarRef" href="#prod-string">string</a></span></code></td></tr>
