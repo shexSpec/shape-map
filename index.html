@@ -121,7 +121,7 @@
     <section id="shapemap-structure">
       <h2>ShapeMap structure</h2>
       <p class="leadup">
-        <dfn data-cite="shex-semantics#dfn-shapemap" data-lt="shapemap|shape-map">ShapeMap</dfn>: a set of <dfn data-lt="shape associations">shape association</dfn>s. Each shape association has at least two members: a <a>node</a> and a <a>shape</a>, and when used for the result of validation, may have any of <a>status</a>, <a>reason</a>, or <a>appInfo</a>:
+        <dfn data-cite="shex-semantics#dfn-shapemap" data-lt="shapemap|shape-map">ShapeMap</dfn>: a finite set of <dfn data-lt="shape associations">shape association</dfn>s. Each shape association has at least two members: a <a>node</a> and a <a>shape</a>, and when used for the result of validation, may have any of <a>status</a>, <a>reason</a>, or <a>appInfo</a>:
       </p>
       <ul class="followup">
         <li class="         leadup"><dfn>node</dfn>: an <a>RDF node</a>, or a <a>triple pattern</a> which is used to select RDF nodes.</li>
@@ -165,7 +165,7 @@
       </p>
 
       <p>
-        A <dfn>fixed ShapeMap</dfn> is a query ShapeMap in which each <a>node</a> is an RDF node.  
+        A <dfn>fixed ShapeMap</dfn> is a query ShapeMap in which each <a>node</a> is an RDF node.
         The ShEx validation process takes as input a fixed ShapeMap.
       </p>
       
@@ -237,7 +237,7 @@
       </ul>
 
       <p class="note" id="query-to-fixed-set">
-        Note that though <a>shape associations</a> with triple patterns may imply redundant fixed ShapeMap associations, the combination of node and shape in the fixed map MUST be unique.
+	Note that though <a>shape associations</a> defined by triple patterns may imply redundant fixed ShapeMap associations, the combination of node and shape in the fixed map MUST be unique.
       </p>
     </section>
 
