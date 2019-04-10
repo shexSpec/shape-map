@@ -228,11 +228,12 @@
           <li><code>P</code>'s predicate is <code>A</code>'s predicate.</li>
           <li>If <code>A</code>'s object is a <a>focus selector</a> or a <a>wildcard</a>, <code>P</code>'s  object is a fresh variable, otherwise <code>P</code>'s subject is <code>A</code>'s object.</li>
         </ul>
-        For each triple <code>T</code> in <code>G</code> which matches <code>P</code>, the fixed ShapeMap has a <a>shape association</a> <code>F</code> where <code>F</code>.shape = <code>A</code>.shape and
+        For each triple <code>T</code> in <code>G</code> which <a>triplesMatches</a> <code>P</code>, the fixed ShapeMap has a <a>shape association</a> <code>F</code> where <code>F</code>.shape = <code>A</code>.shape and
         <ul>
           <li>If <code>A</code>'s subject is a <a>focus selector</a>, <code>F</code>.node is <code>T</code>'s subject.</li>
           <li>If <code>A</code>'s object is a <a>focus selector</a>, <code>F</code>.node is <code>T</code>'s object.</li>
         </ul>
+        <p>A triple <code>T</code> <dfn>triplesMatches</dfn> a pattern <code>P</code> if for every term in <code>P</code> (subject, predicate and object) which is not <a>focus selector</a> or a <a>wildcard</a>, the corresponding term in <code>T</code> is the same RDF term.</p>
         </li>
       </ul>
 
